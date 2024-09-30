@@ -1,18 +1,18 @@
 <?php
 /**
 Plugin Name: Code Profiler
-Plugin URI: https://code-profiler.com/
+Plugin URI: https://nintechnet.com/codeprofiler/
 Description: A profiler to measure the performance of your WordPress plugins and themes.
 Author: Jerome Bruandet ~ NinTechNet Ltd.
 Author URI: https://nintechnet.com/
-Version: 1.7
+Version: 1.7.1
 Network: true
 License: GPLv3 or later
 Text Domain: code-profiler
 Domain Path: /languages
 */
 
-define('CODE_PROFILER_VERSION', '1.7');
+define('CODE_PROFILER_VERSION', '1.7.1');
 /**
  +=====================================================================+
  |    ____          _        ____             __ _ _                   |
@@ -21,7 +21,7 @@ define('CODE_PROFILER_VERSION', '1.7');
  |  | |__| (_) | (_| |  __/ |  __/| | | (_) |  _| | |  __/ |           |
  |   \____\___/ \__,_|\___| |_|   |_|  \___/|_| |_|_|\___|_|           |
  |                                                                     |
- |  (c) Jerome Bruandet ~ https://code-profiler.com/                   |
+ |  (c) Jerome Bruandet ~ https://nintechnet.com/codeprofiler/         |
  +=====================================================================+
 */
 
@@ -267,7 +267,7 @@ function code_profiler_settings_link( $links ) {
 
    $links[] = '<a href="'. get_admin_url( null, 'admin.php?page=code-profiler') .'">'.
 					esc_html__('Start Profiling', 'code-profiler'). '</a>';
-	$links[] = '<a style="font-weight:700;color:#006393;" href="https://code-profiler.com/" '.
+	$links[] = '<a style="font-weight:700;color:#006393;" href="https://nintechnet.com/codeprofiler/" '.
 					'target="_blank" rel="noopener noreferrer">'.
 					esc_html__('Go Pro', 'code-profiler'). '</a>';
 	return $links;

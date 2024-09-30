@@ -7,7 +7,7 @@
  |  | |__| (_) | (_| |  __/ |  __/| | | (_) |  _| | |  __/ |           |
  |   \____\___/ \__,_|\___| |_|   |_|  \___/|_| |_|_|\___|_|           |
  |                                                                     |
- |  (c) Jerome Bruandet ~ https://code-profiler.com/                   |
+ |  (c) Jerome Bruandet ~ https://nintechnet.com/codeprofiler/         |
  +=====================================================================+
 */
 
@@ -268,7 +268,7 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 		$this->is_enabled();
 
 		WP_CLI::log("\nCode Profiler v". CODE_PROFILER_VERSION .
-			" (c)". date('Y') ." Jerome Bruandet & NinTechNet Limited ~ https://code-profiler.com/\n\n".
+			" (c)". date('Y') ." Jerome Bruandet & NinTechNet Limited ~ https://nintechnet.com/codeprofiler/\n\n".
 			"  {$this->cmd_view}     ". __('View last created profile', 'code-profiler') ."\n".
 			"  {$this->cmd_run}      ". __('Run the profiler in the frontend', 'code-profiler') ."\n\n".
 			__('GLOBAL PARAMETERS', 'code-profiler') ."\n\n".

@@ -7,7 +7,7 @@
  |  | |__| (_) | (_| |  __/ |  __/| | | (_) |  _| | |  __/ |           |
  |   \____\___/ \__,_|\___| |_|   |_|  \___/|_| |_|_|\___|_|           |
  |                                                                     |
- |  (c) Jerome Bruandet ~ https://code-profiler.com/                   |
+ |  (c) Jerome Bruandet ~ https://nintechnet.com/codeprofiler/         |
  +=====================================================================+
 */
 
@@ -55,7 +55,7 @@ echo code_profiler_display_tabs( 5 );
 			<h4><?php esc_html_e('Do I need to deactivate or uninstall Code Profiler when I\'m not using it ?', 'code-profiler') ?></h4>
 			<?php esc_html_e('There\'s no need to deactivate Code Profiler when you don\'t use it, it has no performance impact on your site.', 'code-profiler') ?>
 			<br />
-			<?php esc_html_e('Because an update can affect the performance of your site, you should run it after every plugin or theme update.', 'code-profiler') ?>
+			<?php esc_html_e('Because an update can affect the performance of your site, consider running it after every plugin or theme update.', 'code-profiler') ?>
 		</td>
 	</tr>
 	<tr>

@@ -7,7 +7,7 @@
  |  | |__| (_) | (_| |  __/ |  __/| | | (_) |  _| | |  __/ |           |
  |   \____\___/ \__,_|\___| |_|   |_|  \___/|_| |_|_|\___|_|           |
  |                                                                     |
- |  (c) Jerome Bruandet ~ https://code-profiler.com/                   |
+ |  (c) Jerome Bruandet ~ https://nintechnet.com/codeprofiler/         |
  +=====================================================================+
 */
 
@@ -42,6 +42,9 @@ if (! is_writable( CODE_PROFILER_UPLOAD_DIR ) ) {
 
 // Clear the log if it's too big
 code_profiler_clearlog();
+
+// Clean-up temp files left in the profiles folder
+code_profiler_cleantmpfiles();
 
 $home = home_url('/'); // Frontend
 $site = site_url('/'); // Backend

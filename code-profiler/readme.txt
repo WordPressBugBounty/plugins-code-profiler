@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.6
-Stable tag: 1.7
+Stable tag: 1.7.1
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -43,7 +43,7 @@ Install, activate it and you can start profiling your site right away.
 * [Pro] Export all tables and charts in CSV file format.
 * [Pro] Filtering options
 
-Learn more about [Code Profiler Pro](https://code-profiler.com/).
+Learn more about [Code Profiler Pro](https://nintechnet.com/codeprofiler/).
 
 == Frequently Asked Questions ==
 
@@ -92,6 +92,11 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.7.1 (September 27, 2024) =
+* Fixed a "Security keys do not match" error message that occurred when some object caching plugins were installed on the site. The profiler will no longer temporarily save the key to the database to prevent it from being cached by such plugins.
+* Fixed a fatal error when profiling a child site on a multisite installation with WP CLI.
+* [Pro version] : Fixed a bug with some row action links in the "Methods and Functions Performance" that were displaying "View function" instead of "View script" when the script was loaded either with the PHP "require" or "include" expression.
 
 = 1.7 (August 14, 2024) =
 * The system information report includes now an AJAX API test to make sure the endpoint is accessible to the profiler.

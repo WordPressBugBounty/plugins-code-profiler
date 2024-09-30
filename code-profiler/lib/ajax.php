@@ -7,7 +7,7 @@
  |  | |__| (_) | (_| |  __/ |  __/| | | (_) |  _| | |  __/ |           |
  |   \____\___/ \__,_|\___| |_|   |_|  \___/|_| |_|_|\___|_|           |
  |                                                                     |
- |  (c) Jerome Bruandet ~ https://code-profiler.com/                   |
+ |  (c) Jerome Bruandet ~ https://nintechnet.com/codeprofiler/         |
  +=====================================================================+
 */
 
@@ -74,13 +74,6 @@ function codeprofiler_start_profiler() {
 
 	code_profiler_log_debug(
 		esc_html__('Cleaning up the temporary folder', 'code-profiler')
-	);
-
-	// Clean-up temp files left in the profiles folder
-	code_profiler_cleantmpfiles();
-
-	code_profiler_log_debug(
-		esc_html__('Retrieving parameters #1', 'code-profiler')
 	);
 
 	// Frontend or backend
@@ -192,7 +185,7 @@ function codeprofiler_start_profiler() {
 
 	// Create security key
 	$profiler_key			= bin2hex( random_bytes( 16 ) );
-	$cp_options['hash']	= sha1( $profiler_key );
+	touch( CODE_PROFILER_UPLOAD_DIR .'/key_'. sha1( $profiler_key ) .'.tmp');
 
 	code_profiler_log_debug(
 		esc_html__('Building HTTP query', 'code-profiler')
@@ -629,11 +622,6 @@ function codeprofiler_prepare_report() {
 	// Take a 1s break so that we can spot any potential error
 	// in the backend before AJAX refresh the page
 	usleep( 1000000 );
-
-	// Clear hash
-	$cp_options = get_option('code-profiler');
-	unset( $cp_options['hash']	);
-	update_option('code-profiler', $cp_options );
 
 	code_profiler_log_info(
 		esc_html__('All done, exiting profiler', 'code-profiler')

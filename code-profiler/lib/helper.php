@@ -7,7 +7,7 @@
  |  | |__| (_) | (_| |  __/ |  __/| | | (_) |  _| | |  __/ |           |
  |   \____\___/ \__,_|\___| |_|   |_|  \___/|_| |_|_|\___|_|           |
  |                                                                     |
- |  (c) Jerome Bruandet ~ https://code-profiler.com/                   |
+ |  (c) Jerome Bruandet ~ https://nintechnet.com/codeprofiler/         |
  +=====================================================================+
 */
 
@@ -20,7 +20,14 @@ if (! defined('ABSPATH') ) {
 
 // The profiles directory can be defined in the wp-config.php script
 if (! defined('CODE_PROFILER_UPLOAD_DIR') ) {
-	$upload_dir = wp_upload_dir();
+	// When running Code Profiler via WP CLI on a child site of a multisite installation,
+	// we need to get the main site upload folder otherwise wp_upload_dir will return
+	// the child site's
+	if ( is_multisite() && ! ( is_main_network() && is_main_site() && defined('MULTISITE') ) ) {
+		$upload_dir = code_profiler_upload_dir();
+	} else {
+		$upload_dir = wp_upload_dir();
+	}
 	define('CODE_PROFILER_UPLOAD_DIR', $upload_dir['basedir'] .'/code-profiler');
 }
 define('CODE_PROFILER_LOG', CODE_PROFILER_UPLOAD_DIR .'/log.php');
@@ -53,7 +60,7 @@ if (! defined('CODE_PROFILER_UA') ) { // UA signatures can be user-defined in th
 		esc_html__('Bot', 'code-profiler')    => [
 			'Google Bot'		=> 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
 			'WordPress'			=> 'Mozilla/5.0 (compatible; CodeProfiler for WordPress/'. $wp_version .
-										'; https://code-profiler.com/)'
+										'; https://nintechnet.com/codeprofiler/)'
 		]
 
 	] );
@@ -70,6 +77,31 @@ define('CODE_PROFILER_ACCURACY', [
 	15		=> __('Low', 'code-profiler'),
 	20		=> __('Lowest', 'code-profiler')
 ]);
+
+// =====================================================================
+// Find the main site upload dir on a multisite installation.
+// Used when running the profiler via WP CLI.
+// This code is based on the WP private _wp_upload_dir function.
+
+function code_profiler_upload_dir() {
+
+	$upload_path = trim( get_option('upload_path') );
+	if ( empty( $upload_path ) || 'wp-content/uploads' === $upload_path ) {
+		$basedir = WP_CONTENT_DIR . '/uploads';
+	} elseif ( strpos( $upload_path, ABSPATH ) !== 0 ) {
+		// $basedir is absolute, $upload_path is (maybe) relative to ABSPATH.
+		$basedir = path_join( ABSPATH, $upload_path );
+	} else {
+		$basedir = $upload_path;
+	}
+
+	if ( defined('UPLOADS') && ! ( is_multisite() && get_site_option('ms_files_rewriting') ) ) {
+		$basedir = ABSPATH . UPLOADS;
+	}
+
+	return ['basedir' => $basedir];
+}
+
 // =====================================================================
 // Prevent cURL timeout if a plugin changes its timeout options.
 
@@ -301,34 +333,30 @@ function code_profiler_disable_opcode() {
 			define('DISABLE_WP_CRON', true );
 		}
 	}
-
 }
+
 // =====================================================================
-// Verify the security key when running the profile.
+// Verify the security key when running the profiler.
 
 function code_profiler_verify_key() {
 
 	$response = [
 		'status'		=> 'error',
-		'message'	=> __('Security keys do not match. Reload the page and try again (%s)', 'code-profiler')
+		'message'	=> __('Security keys do not match. Reload the page and try again (%s)',
+							'code-profiler')
 	];
 
-	$cp_options = get_option('code-profiler');
-
-	if ( empty( $cp_options['hash'] ) ) {
-		$response['message'] = sprintf( $response['message'], '#1');
+	if ( empty( $_REQUEST['profiler_key'] ) ) {
+		$response['message'] = sprintf( $response['message'], '001');
 
 	} else {
-		if ( empty( $_REQUEST['profiler_key'] ) ) {
-			$response['message'] = sprintf( $response['message'], '#2');
-
-		} else {
-			if ( $cp_options['hash'] == sha1( $_REQUEST['profiler_key'] ) ) {
-				return;
-			} else {
-				$response['message'] = sprintf( $response['message'], '#3');
-			}
+		$file = CODE_PROFILER_UPLOAD_DIR .'/key_'. sha1( $_REQUEST['profiler_key'] ) .'.tmp';
+		if ( file_exists( $file ) ) {
+			// Delete it and accept the request
+			unlink( $file );
+			return;
 		}
+		$response['message'] = sprintf( $response['message'], '002');
 	}
 	wp_send_json( $response );
 
@@ -560,23 +588,15 @@ function code_profiler_getsummarystats( $profile_path, $type = 'html') {
 }
 
 // =====================================================================
-// Remove *tmp files left after an HTTP error (4xx or 5xx).
+// Remove *tmp files left in the profiles folder.
 
 function code_profiler_cleantmpfiles() {
 
 	$glob = code_profiler_glob( CODE_PROFILER_UPLOAD_DIR, '\.tmp$', true );
 
 	if ( is_array( $glob ) ) {
-		$count = 0;
 		foreach( $glob as $file ) {
-			$count++;
 			unlink( $file );
-		}
-		if ( $count ) {
-			code_profiler_log_info( sprintf(
-				__('Deleting %s temporary files found in the profiles folder', 'code-profiler'),
-				(int) $count
-			) );
 		}
 	}
 }
@@ -620,7 +640,7 @@ function code_profiler_admin_footer () {
 				'Thank you for using %sCode Profiler%s.',
 				'code-profiler'
 			),
-			'<a href="https://code-profiler.com" target="_blank">',
+			'<a href="https://nintechnet.com/codeprofiler/" target="_blank">',
 			'</a>'
 		).
 		'</span>';
