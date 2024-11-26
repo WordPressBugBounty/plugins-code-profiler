@@ -38,45 +38,52 @@ define('CODE_PROFILER_TMP_DISKIO_LOG', 'diskio.tmp');
 define('CODE_PROFILER_TMP_CONNECTIONS_LOG', 'connections.tmp');
 define('CODE_PROFILER_UPDATE_NOTICE', '<div class="updated notice is-dismissible"><p>%s</p></div>');
 define('CODE_PROFILER_ERROR_NOTICE', '<div class="error notice is-dismissible"><p>%s</p></div>');
-global $wp_version;
-if (! defined('CODE_PROFILER_UA') ) { // UA signatures can be user-defined in the wp-config.php
-	define ('CODE_PROFILER_UA', [
-		esc_html__('Desktop', 'code-profiler') => [
-			'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0',
-			'Chrome'				=> 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,'.
-										' like Gecko) Chrome/125.0.0.0 Safari/537.36',
-			'Edge'				=> 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,'.
-										' like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.2535.67'
-		],
-		esc_html__('Mobile', 'code-profiler') => [
-			'Android Phone'	=> 'Mozilla/5.0 (Android 14; Mobile; rv:68.0) Gecko/68.0 Firefox/126.0',
-			'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 14.0; SAMSUNG-SM-T377A Build/NMF26X)'.
-									' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36',
-			'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15'.
-									' (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',
-			'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15'.
-									' (KHTML, like Gecko) GSA/213.0.449417121 Mobile/15E148 Safari/605.1.15'
-		],
-		esc_html__('Bot', 'code-profiler')    => [
-			'Google Bot'		=> 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-			'WordPress'			=> 'Mozilla/5.0 (compatible; CodeProfiler for WordPress/'. $wp_version .
-										'; https://nintechnet.com/codeprofiler/)'
-		]
-
-	] );
-}
-
 if (! defined('CODE_PROFILER_MUPLUGIN') ) {
 	// MU plugin's name can be defined in the wp-config.php
 	define('CODE_PROFILER_MUPLUGIN', '0----code-profiler.php');
 }
-define('CODE_PROFILER_ACCURACY', [
-	1		=> __('Highest', 'code-profiler'),
-	5		=> __('High', 'code-profiler'),
-	10		=> __('Moderate', 'code-profiler'),
-	15		=> __('Low', 'code-profiler'),
-	20		=> __('Lowest', 'code-profiler')
-]);
+
+/**
+ * Since WP 6.7, translation loading must not be triggered too early.
+ */
+add_action('init', 'code_profiler_i18n_constants');
+function code_profiler_i18n_constants() {
+
+	global $wp_version;
+	if (! defined('CODE_PROFILER_UA') ) { // UA signatures can be user-defined in the wp-config.php
+		define ('CODE_PROFILER_UA', [
+			esc_html__('Desktop', 'code-profiler') => [
+				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0',
+				'Chrome'				=> 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,'.
+											' like Gecko) Chrome/125.0.0.0 Safari/537.36',
+				'Edge'				=> 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,'.
+											' like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.2535.67'
+			],
+			esc_html__('Mobile', 'code-profiler') => [
+				'Android Phone'	=> 'Mozilla/5.0 (Android 14; Mobile; rv:68.0) Gecko/68.0 Firefox/126.0',
+				'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 14.0; SAMSUNG-SM-T377A Build/NMF26X)'.
+										' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36',
+				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15'.
+										' (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',
+				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15'.
+										' (KHTML, like Gecko) GSA/213.0.449417121 Mobile/15E148 Safari/605.1.15'
+			],
+			esc_html__('Bot', 'code-profiler')    => [
+				'Google Bot'		=> 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+				'WordPress'			=> 'Mozilla/5.0 (compatible; CodeProfiler for WordPress/'. $wp_version .
+											'; https://nintechnet.com/codeprofiler/)'
+			]
+
+		] );
+	}
+	define('CODE_PROFILER_ACCURACY', [
+		1		=> __('Highest', 'code-profiler'),
+		5		=> __('High', 'code-profiler'),
+		10		=> __('Moderate', 'code-profiler'),
+		15		=> __('Low', 'code-profiler'),
+		20		=> __('Lowest', 'code-profiler')
+	]);
+}
 
 // =====================================================================
 // Find the main site upload dir on a multisite installation.

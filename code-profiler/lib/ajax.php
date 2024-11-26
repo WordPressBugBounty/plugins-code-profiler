@@ -73,7 +73,7 @@ function codeprofiler_start_profiler() {
 	}
 
 	code_profiler_log_debug(
-		esc_html__('Cleaning up the temporary folder', 'code-profiler')
+		esc_html__('Retrieving parameters #1', 'code-profiler')
 	);
 
 	// Frontend or backend
@@ -191,7 +191,10 @@ function codeprofiler_start_profiler() {
 		esc_html__('Building HTTP query', 'code-profiler')
 	);
 
-	// Build query
+	/**
+	 * Build the query.
+	 */
+	$raw_url = $url;
 	$url = add_query_arg( [
 		'CODE_PROFILER_ON'	=> $microtime,
 		'profiler_key'			=> $profiler_key
@@ -474,23 +477,80 @@ function codeprofiler_start_profiler() {
 		esc_html__('Fetching HTTP response', 'code-profiler')
 	);
 
+	/**
+	 * Always log last HTTP response headers and body,
+	 * except sensitive data (cookies & PHP session ID).
+	 */
+	if ( isset( $res['headers'] ) && isset( $res['body'] ) ) {
+		/**
+		 * Search for an existing log or create it.
+		 */
+		$last_log = code_profiler_glob(
+			CODE_PROFILER_UPLOAD_DIR,
+			'^last_request\.\d+?\.\d+?\.log$',
+			true
+		);
+		if ( empty( $last_log[0] ) ) {
+			$last_log[0] = CODE_PROFILER_UPLOAD_DIR .'/last_request.'. microtime( true ) .'.log';
+		}
+		/**
+		 * Parse headers.
+		 */
+		$headers = "HTTP {$res['response']['code']} {$res['response']['message']}\n";
+
+		foreach( $res['headers'] as $key => $value ) {
+			/**
+			 * Remove cookies.
+			 */
+			if ( $key == 'set-cookie') {
+				$headers .= ucfirst( $key ) .': *** '. __('Removed', 'code-profiler') ." ***\n";
+			} else {
+				/**
+				 * HTTP headers can contain arrays.
+				 */
+				if ( is_array( $value ) ) {
+					foreach( $value as $k => $v ) {
+						$headers .= ucfirst( $key ) .": $v\n";
+					}
+				} else {
+					$headers .= ucfirst( $key ) .": $value\n";
+				}
+			}
+		}
+		/**
+		 * Save to the log.
+		 */
+		file_put_contents( $last_log[0],
+			"==================================================\n".
+			__('Requested page:', 'code-profiler') ."\n\n".
+			"$raw_url\n".
+			"==================================================\n".
+			__('Response headers:', 'code-profiler') ."\n\n".
+			$headers .
+			"==================================================\n".
+			__('Response body:', 'code-profiler') ."\n\n".
+			print_r( $res['body'], true ).
+			"\n==================================================\n"
+		);
+	}
+
 	// HTTP status code
 	if (! empty( $cp_options['http_response'] ) ) {
 		if ( preg_match( "/{$cp_options['http_response']}/", $res['response']['code'] ) ) {
+
+			$msg = '';
+
 			$log = esc_html__(
+				/* Translators: HTTP response code and message */
 				'The website returned the following HTTP status code: %s %s.', 'code-profiler'
 			);
-			if ( $res['response']['code'] >= 500 ) {
-				$msg = $log .' '. esc_html__(
-					'You may find more details about this error in your PHP error log.',
-					'code-profiler'
-				);
-			} else {
-				$msg = $log .' '. esc_html__('By default, the profiler will always abort and throw an error '.
-				'if the server did not return a 200 HTTP status code. You can change that behaviour in '.
-				'the Settings section if the page you are profiling needs to return a different '.
-				'code (3xx, 4xx or 5xx).', 'code-profiler');
+
+			if ( $res['response']['code'] < 500 ) {
+				$log .= ' '. esc_html__('By default, the profiler will always abort and throw an error if the server did not return a 200 HTTP status code. You can change that behaviour in the "Settings" section if the page you are profiling needs to return a different code (3xx, 4xx or 5xx).', 'code-profiler');
 			}
+
+			$msg .= $log .' '. esc_html__('You may find more details about this error in your PHP error log and/or in the "Logs" section.', 'code-profiler');
+
 			$response['message'] = sprintf(
 				$msg,
 				(int) $res['response']['code'],

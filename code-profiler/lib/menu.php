@@ -71,7 +71,7 @@ function code_profiler_display_tabs( $which ) {
 		<a href="?page=code-profiler&cptab=settings" class="nav-tab <?php
 			echo esc_html( $t3 ) ?>"><?php esc_html_e( 'Settings', 'code-profiler' ) ?></a>
 		<a href="?page=code-profiler&cptab=log" class="nav-tab <?php
-			echo esc_html( $t4 ) ?>"><?php esc_html_e( 'Log', 'code-profiler' ) ?></a>
+			echo esc_html( $t4 ) ?>"><?php esc_html_e( 'Logs', 'code-profiler' ) ?></a>
 		<a href="?page=code-profiler&cptab=faq" class="nav-tab <?php
 			echo esc_html( $t5 ) ?>"><?php esc_html_e( 'FAQ', 'code-profiler' ) ?></a>
 		<a href="?page=code-profiler&cptab=support" class="nav-tab <?php

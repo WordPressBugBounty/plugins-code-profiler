@@ -36,6 +36,7 @@ class CP_Troubleshooter {
 		$this->check_wpdb('wpdb');
 		$this->check_cache('cache');
 		$this->check_proxy('proxy');
+		$this->is_multisite('multisite');
 		$this->get_all_plugins('plugins');
 		$this->get_theme('themes');
 		$this->get_cp_config();
@@ -239,6 +240,21 @@ class CP_Troubleshooter {
 			}
 		}
 
+	}
+
+
+	/**
+	 * Check if that is a multisite installation.
+	 */
+	private function is_multisite( $key ) {
+
+		if ( is_multisite() ) {
+			global $current_blog;
+			$this->buffer[ $key ] = "site: {$current_blog->site_id}, blog: {$current_blog->blog_id}";
+			return;
+		}
+
+		$this->buffer[ $key ] = 0;
 	}
 
 

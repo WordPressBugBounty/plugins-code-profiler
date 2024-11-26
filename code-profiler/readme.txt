@@ -2,8 +2,8 @@
 Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
-Tested up to: 6.6
-Stable tag: 1.7.1
+Tested up to: 6.7
+Stable tag: 1.7.2
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,12 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.7.2 (November 26, 2024) =
+* The profiler will now save to a log the HTTP headers and body response of the last profile. It can be useful to debug errors. To view the log, click on the "Logs" tab of the main page.
+* Fixed a "Function _load_textdomain_just_in_time was called incorrectly" PHP notice.
+* Updated ChartJS.
+* Small fixes and adjustments.
 
 = 1.7.1 (September 27, 2024) =
 * Fixed a "Security keys do not match" error message that occurred when some object caching plugins were installed on the site. The profiler will no longer temporarily save the key to the database to prevent it from being cached by such plugins.

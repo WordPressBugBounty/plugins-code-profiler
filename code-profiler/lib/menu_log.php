@@ -88,6 +88,7 @@ if ( defined('CODE_PROFILER_TEXTAREA_HEIGHT') ) {
 
 echo code_profiler_display_tabs( 4 );
 ?>
+<h3><?php esc_html_e('Code Profiler log', 'code-profiler'); ?></h3>
 <form name="cplogform" method="post">
 	<table class="form-table">
 		<tr>
@@ -139,6 +140,28 @@ echo code_profiler_display_tabs( 4 );
 		</tr>
 	</table>
 </form>
+
+<h3><?php esc_html_e('HTTP response log', 'code-profiler'); ?></h3>
+<table class="form-table">
+	<tr>
+		<td width="100%">
+			<textarea dir="auto" name="cptxtlog" class="large-text code" style="height:<?php echo $th; ?>px;" wrap="off" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><?php
+
+			/**
+			 * Search for an eventual "last_request.1727412303.5681.log" file.
+			 */
+			$file = code_profiler_glob( CODE_PROFILER_UPLOAD_DIR, '^last_request\.\d+?\.\d+?\.log$', true );
+			if ( empty( $file[0] ) ) {
+				echo "\n\n > " . esc_html__('The HTTP response log is empty.', 'code-profiler');
+			} else {
+				$log = file_get_contents( $file[0] );
+				echo esc_textarea( $log );
+			}
+			?></textarea>
+			<p class="description"><?php esc_html_e('The log shows the HTTP response headers and body for the last profile.', 'code-profiler') ?></p>
+		</td>
+	</tr>
+</table>
 <?php
 
 // =====================================================================
