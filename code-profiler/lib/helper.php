@@ -53,19 +53,19 @@ function code_profiler_i18n_constants() {
 	if (! defined('CODE_PROFILER_UA') ) { // UA signatures can be user-defined in the wp-config.php
 		define ('CODE_PROFILER_UA', [
 			esc_html__('Desktop', 'code-profiler') => [
-				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0',
+				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0',
 				'Chrome'				=> 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,'.
-											' like Gecko) Chrome/125.0.0.0 Safari/537.36',
+											' like Gecko) Chrome/133.0.0.0 Safari/537.36',
 				'Edge'				=> 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,'.
-											' like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.2535.67'
+											' like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/131.0.2903.86'
 			],
 			esc_html__('Mobile', 'code-profiler') => [
-				'Android Phone'	=> 'Mozilla/5.0 (Android 14; Mobile; rv:68.0) Gecko/68.0 Firefox/126.0',
-				'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 14.0; SAMSUNG-SM-T377A Build/NMF26X)'.
+				'Android Phone'	=> 'Mozilla/5.0 (Android 15; Mobile; rv:68.0) Gecko/68.0 Firefox/135.0',
+				'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 15.0; SAMSUNG-SM-T377A Build/NMF26X)'.
 										' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36',
-				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15'.
-										' (KHTML, like Gecko) Version/17.4.1 Mobile/15E148 Safari/604.1',
-				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 17_5_1 like Mac OS X) AppleWebKit/605.1.15'.
+				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_7_2 like Mac OS X) AppleWebKit/605.1.15'.
+										' (KHTML, like Gecko) Version/17_7_2 Mobile/15E148 Safari/604.1',
+				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 17_7_2 like Mac OS X) AppleWebKit/605.1.15'.
 										' (KHTML, like Gecko) GSA/213.0.449417121 Mobile/15E148 Safari/605.1.15'
 			],
 			esc_html__('Bot', 'code-profiler')    => [

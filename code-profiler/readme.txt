@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.7
-Stable tag: 1.7.2
+Stable tag: 1.7.3
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,11 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.7.3 (February 15, 2024) =
+* Updated ChartJS.
+* Updated browser's signatures.
+* Truncated exported CSV data to max 32,000 characters per cell to prevent a "maximum numbers of characters per cell was exceeded" error in Libre Office and similar spreadsheet apps.
 
 = 1.7.2 (November 26, 2024) =
 * The profiler will now save to a log the HTTP headers and body response of the last profile. It can be useful to debug errors. To view the log, click on the "Logs" tab of the main page.
