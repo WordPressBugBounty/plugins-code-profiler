@@ -462,8 +462,15 @@ function code_profiler_get_profile_data( $file, $type = 'slugs') {
 		return $buffer;
 	}
 
+	/**
+	 * We don't use fgetcsv() as it requires the $escape parameter since PHP 8.4
+	 */
 	while (! feof( $fh ) ) {
-		$buffer[] = fgetcsv( $fh, 1000, "\t" );
+		$tmp = trim( fgets( $fh, 1000 ) );
+		if (! $tmp ) {
+			continue;
+		}
+		$buffer[] = explode( "\t", $tmp );
 	}
 
 	fclose( $fh );

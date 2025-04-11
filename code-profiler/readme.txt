@@ -2,8 +2,8 @@
 Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
-Tested up to: 6.7
-Stable tag: 1.7.3
+Tested up to: 6.8
+Stable tag: 1.7.4
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -93,23 +93,35 @@ Code Profiler does not collect any private data from you or your visitors. It do
 
 == Changelog ==
 
-= 1.7.3 (February 15, 2024) =
+= 1.7.4 (April 11, 2025) =
+
+* Prevent duplicate items in the "File and folder exclusions" list.
+* Fixed a PHP 8.4 "fgetcsv(): the $escape parameter must be provided" deprecated notice.
+* [Pro version] : Fixed several PHP 8.4 "fputcsv(): the $escape parameter must be provided" deprecated notices.
+* Ensure compatibility with the latest WordPress 6.8.
+* Updated ChartJS.
+
+= 1.7.3 (February 15, 2025) =
+
 * Updated ChartJS.
 * Updated browser's signatures.
 * Truncated exported CSV data to max 32,000 characters per cell to prevent a "maximum numbers of characters per cell was exceeded" error in Libre Office and similar spreadsheet apps.
 
 = 1.7.2 (November 26, 2024) =
+
 * The profiler will now save to a log the HTTP headers and body response of the last profile. It can be useful to debug errors. To view the log, click on the "Logs" tab of the main page.
 * Fixed a "Function _load_textdomain_just_in_time was called incorrectly" PHP notice.
 * Updated ChartJS.
 * Small fixes and adjustments.
 
 = 1.7.1 (September 27, 2024) =
+
 * Fixed a "Security keys do not match" error message that occurred when some object caching plugins were installed on the site. The profiler will no longer temporarily save the key to the database to prevent it from being cached by such plugins.
 * Fixed a fatal error when profiling a child site on a multisite installation with WP CLI.
 * [Pro version] : Fixed a bug with some row action links in the "Methods and Functions Performance" that were displaying "View function" instead of "View script" when the script was loaded either with the PHP "require" or "include" expression.
 
 = 1.7 (August 14, 2024) =
+
 * The system information report includes now an AJAX API test to make sure the endpoint is accessible to the profiler.
 * If the profiler returned a 301/302 HTTP redirection error message, the new location would be written to the log.
 * Updated ChartJS.

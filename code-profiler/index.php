@@ -5,14 +5,14 @@ Plugin URI: https://nintechnet.com/codeprofiler/
 Description: A profiler to measure the performance of your WordPress plugins and themes.
 Author: Jerome Bruandet ~ NinTechNet Ltd.
 Author URI: https://nintechnet.com/
-Version: 1.7.3
+Version: 1.7.4
 Network: true
 License: GPLv3 or later
 Text Domain: code-profiler
 Domain Path: /languages
 */
 
-define('CODE_PROFILER_VERSION', '1.7.3');
+define('CODE_PROFILER_VERSION', '1.7.4');
 /**
  +=====================================================================+
  |    ____          _        ____             __ _ _                   |

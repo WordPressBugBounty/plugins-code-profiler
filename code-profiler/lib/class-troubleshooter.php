@@ -58,6 +58,12 @@ class CP_Troubleshooter {
 
 		$this->buffer[ $key ]['OS'] = php_uname();
 
+		if (! empty( $_SERVER['SERVER_NAME'] ) ) {
+			$this->buffer[ $key ]['SERVER_NAME'] = $_SERVER['SERVER_NAME'];
+		} else {
+			$this->buffer[ $key ]['SERVER_NAME'] = 'N/A';
+		}
+
 		if (! empty( $_SERVER['SERVER_SOFTWARE'] ) ) {
 			$this->buffer[ $key ]['HTTP server'] = $_SERVER['SERVER_SOFTWARE'];
 		} else {
@@ -135,6 +141,13 @@ class CP_Troubleshooter {
 		}
 		$this->buffer[ $key ]['WordPress']['WP_DEBUG_LOG'] = $wp_debug;
 
+		/**
+		 * WPMU plugins directory.
+		 */
+		$this->buffer[ $key ]['WordPress']['WPMU_PLUGIN_DIR']['DIR'] =
+			$this->shorten_path( WPMU_PLUGIN_DIR );
+		$this->buffer[ $key ]['WordPress']['WPMU_PLUGIN_DIR']['writable'] =
+			is_writable( WPMU_PLUGIN_DIR );
 	}
 
 	/**

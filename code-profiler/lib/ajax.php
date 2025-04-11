@@ -434,17 +434,24 @@ function codeprofiler_start_profiler() {
 		unset( $cp_options['cookies'] );
 	}
 
-	// Optional file and folder exclusions
-	$exclusions = [];
+	/**
+	 * Optional file and folder exclusions.
+	 */
+	$tmp_exclusions = [];
 	if (! empty( $_POST['exclusions'] ) ) {
 		$tmp_array = explode( PHP_EOL, trim( stripslashes( $_POST['exclusions'] ) ) );
 		foreach( $tmp_array as $item ) {
 			$item = trim( code_profiler_ASCII_filter( $item ) );
 			if ( $item ) {
-				$exclusions[] = $item;
+				$tmp_exclusions[] = $item;
 			}
 		}
 	}
+	/**
+	 * Remove duplicates.
+	 */
+	$exclusions = array_unique( $tmp_exclusions );
+
 	if ( $exclusions) {
 		$cp_options['exclusions'] = json_encode( $exclusions );
 	} else {
