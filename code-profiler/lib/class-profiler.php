@@ -75,14 +75,16 @@ class CodeProfiler_Profiler {
 
 					code_profiler_log_debug(
 						sprintf(
-							esc_html__('Setting theme to %s', 'code-profiler'),
+							// We cannot load translation here.
+							'Setting theme to %s',
 							CODE_PROFILER_STYLESHEET
 						)
 					);
 				} else {
 					code_profiler_log_error(
 						sprintf(
-							esc_html__('Unable to switch theme, %s not found', 'code-profiler'),
+							// We cannot load translation here.
+							'Unable to switch theme, %s not found',
 							CODE_PROFILER_STYLESHEET
 						)
 					);
@@ -108,7 +110,8 @@ class CodeProfiler_Profiler {
 		}
 		code_profiler_log_debug(
 			sprintf(
-				esc_html__('Setting size of memory buffer to %sMB', 'code-profiler'),
+				// We cannot load translation here.
+				'Setting size of memory buffer to %sMB',
 				self::$buffer / 1000000
 			)
 		);
@@ -122,7 +125,8 @@ class CodeProfiler_Profiler {
 		add_action('http_api_debug', [ $this, 'http_api_debug'], 10000, 5 );
 		register_shutdown_function( [ $this, 'code_profiler_shutdown'] );
 		code_profiler_log_debug(
-			esc_html__('Starting profiler', 'code-profiler')
+			// We cannot load translation here.
+			'Starting profiler'
 		);
 		require 'class-stream.php';
 

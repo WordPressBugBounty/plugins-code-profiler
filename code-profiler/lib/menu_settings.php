@@ -280,6 +280,22 @@ $cp_options = get_option('code-profiler');
 				?></p>
 			</td>
 		</tr>
+		<?php
+		if ( empty( $cp_options['php_error'] ) ) {
+			$cp_options['php_error'] = 0;
+		} else {
+			$cp_options['php_error'] = 1;
+		}
+		?>
+		<tr>
+			<th scope="row"><?php esc_html_e('PHP Error Logging', 'code-profiler') ?> <span class="code-profiler-tip" data-tip="<?php
+				esc_attr_e('This option will enable PHP error logging. The log will be saved by default to "/wp-content/debug.log", unless you configured PHP or WordPress to use a different path.', 'code-profiler');
+				?>"></span>
+			</th>
+			<td>
+				<p><label><input type="checkbox" name="cp_options[php_error]"<?php checked( $cp_options['php_error'], '1') ?> /><?php esc_html_e('Enable PHP error logging.','code-profiler') ?></label></p>
+			</td>
+		</tr>
 	</table>
 
 	<p><input type="submit" name="save-settings" class="button button-primary" value="<?php esc_attr_e('Save Settings', 'code-profiler') ?>" /></p>
@@ -400,6 +416,15 @@ function code_profiler_save_settings() {
 		$cp_options['buffer'] = 10;
 	} else {
 		$cp_options['buffer'] = (int) $_POST['cp_options']['buffer'];
+	}
+
+	/**
+	 * PHP error logging.
+	 */
+	if (! empty( $_POST['cp_options']['php_error'] ) ) {
+		$cp_options['php_error'] = 1;
+	} else {
+		$cp_options['php_error'] = 0;
 	}
 
 	return update_option('code-profiler', $cp_options );

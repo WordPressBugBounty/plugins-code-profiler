@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.7.4
+Stable tag: 1.7.5
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,12 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.7.5 (06 May, 2025) =
+
+* An option to enable PHP error debugging when the profiler is running was added. It is enabled by default and can be turned off in the "Settings" page.
+* Updated ChartJS.
+* Fixed a few deprecated notices in translation loading, when starting the profiler.
 
 = 1.7.4 (April 11, 2025) =
 

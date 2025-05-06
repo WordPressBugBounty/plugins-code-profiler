@@ -154,6 +154,11 @@ function code_profiler_init_update() {
 			$cp_options['accuracy'] = 1;
 		}
 
+		// Version 1.7.5
+		if (! isset( $cp_options['php_error'] ) ) {
+			$cp_options['php_error'] = 1;
+		}
+
 		// Update version in the DB
 		update_option('code-profiler', $cp_options );
 	}
@@ -335,9 +340,24 @@ function code_profiler_disable_opcode() {
 	} catch ( Exception $e ) { }
 
 	$cp_options = get_option('code-profiler');
+	/**
+	 * Disable WP-CRON.
+	 */
 	if (! empty( $cp_options['disable_wpcron'] ) ) {
 		if (! defined('DISABLE_WP_CRON') ) {
 			define('DISABLE_WP_CRON', true );
+		}
+	}
+	/**
+	 * Enable PHP error logging.
+	 */
+	if (! empty( $cp_options['php_error'] ) ) {
+		ini_set('log_errors', 1 );
+		$phplog = ini_get('error_log');
+		if ( empty( $phplog ) || $phplog === false ) {
+			ini_set('error_log', WP_CONTENT_DIR .'/debug.log');
+		} else {
+			ini_set('error_log', $phplog );
 		}
 	}
 }
@@ -349,8 +369,8 @@ function code_profiler_verify_key() {
 
 	$response = [
 		'status'		=> 'error',
-		'message'	=> __('Security keys do not match. Reload the page and try again (%s)',
-							'code-profiler')
+		// We cannot load translation here.
+		'message'	=> 'Security keys do not match. Reload the page and try again (%s)'
 	];
 
 	if ( empty( $_REQUEST['profiler_key'] ) ) {
