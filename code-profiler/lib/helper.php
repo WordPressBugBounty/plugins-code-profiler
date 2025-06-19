@@ -680,12 +680,15 @@ function code_profiler_admin_footer () {
 		'</span>';
 }
 
-// =====================================================================
-// Display/hide an element depending on some value
 
-function code_profiler_hide( $var, $val ) {
+// =====================================================================
+// Hide/display an element depending on some value.
+
+function code_profiler_showhide( $var, $val ) {
 
 	if ( $var == $val ) {
+		echo " style='display:block'";
+	} else {
 		echo " style='display:none'";
 	}
 }

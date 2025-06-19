@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.7.5
+Stable tag: 1.7.6
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,14 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.7.6 (19 June, 2025) =
+
+* You can now enter a raw POST payload as opposed to a formatted one, by selecting the "Profiler > Advanced Options > HTTP Method > Content-type > application/x-www-form-urlencoded (raw)" option.
+* [Free version] : Fixed a PHP "WP_List_Table::__set(): The property is_empty is not declared" error.
+* The "HTTP response log" will show the POST payload (if any) for the last profile.
+* Updated ChartJS.
+* Small fixes and adjustments.
 
 = 1.7.5 (06 May, 2025) =
 

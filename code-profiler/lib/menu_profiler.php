@@ -87,7 +87,7 @@ if ( isset( $cp_options['cookies'] ) ) {
 	$cookies = trim( stripslashes( json_decode( $cp_options['cookies'] ) ) );
 }
 if ( empty( $cp_options['mem_content_type'] ) ||
-	! in_array( $cp_options['mem_content_type'], [ 1, 2 ] ) ) {
+	! in_array( $cp_options['mem_content_type'], [ 1, 2, 3 ] ) ) {
 
 	$cp_options['mem_content_type'] = 1;
 }
@@ -235,18 +235,22 @@ if (! empty( $cookies ) || ! empty( $custom_headers ) || $cp_options['mem_method
 				<p>
 					<?php esc_html_e('Content-type:', 'code-profiler') ?>
 					<select name="cp-content-type" id="id-content-type"<?php disabled( $cp_options['mem_method'], 'get') ?> onChange="cpjs_content_type(this.value);">
-						<option value="1"<?php selected( $cp_options['mem_content_type'], 1 )?>>application/x-www-form-urlencoded (<?php esc_html_e('default', 'code-profiler') ?>)</option>
+						<option value="1"<?php selected( $cp_options['mem_content_type'], 1 )?>>application/x-www-form-urlencoded (<?php esc_html_e('formatted', 'code-profiler') ?>)</option>
+						<option value="3"<?php selected( $cp_options['mem_content_type'], 3 )?>>application/x-www-form-urlencoded (<?php esc_html_e('raw', 'code-profiler') ?>)</option>
 						<option value="2"<?php selected( $cp_options['mem_content_type'], 2 )?>>application/json</option>
 					</select>
 				</p>
 				<p>
 					<textarea name="post-value" id="post-value" class="regular-text code"<?php disabled( $cp_options['mem_method'], 'get') ?> maxlength="4000" rows="6"><?php echo esc_textarea( $payload ) ?></textarea>
 				</p>
-				<p class="description" id="ct-1"<?php echo code_profiler_hide( $cp_options['mem_content_type'], 2) ?>>
+				<p class="description" id="ct-1"<?php echo code_profiler_showhide( $cp_options['mem_content_type'], 1 ) ?>>
 					<?php printf( esc_html__('Optional POST payload in %s format, one item per line.', 'code-profiler'), '<code>name=value</code>') ?> <?php printf( esc_html__('%sView example%s', 'code-profiler'), '<a href="'. plugins_url('/static/help/http_method-1.png', dirname( __FILE__ ) ) .'" target="_blank" rel="noopener noreferrer">', '</a>') ?>
 				</p>
-				<p class="description" id="ct-2"<?php echo code_profiler_hide( $cp_options['mem_content_type'], 1) ?>>
-					<?php printf( esc_html__('Optional JSON-encoded payload.', 'code-profiler'), '<code>name=value</code>') ?> <?php printf( esc_html__('%sView example%s', 'code-profiler'), '<a href="'. plugins_url('/static/help/http_method-2.png', dirname( __FILE__ ) ) .'" target="_blank" rel="noopener noreferrer">', '</a>') ?>
+				<p class="description" id="ct-3"<?php echo code_profiler_showhide( $cp_options['mem_content_type'], 3 ) ?>>
+					<?php printf( esc_html__('Optional raw POST payload, on a single line.', 'code-profiler'), '<code>name=value</code>') ?> <?php printf( esc_html__('%sView example%s', 'code-profiler'), '<a href="'. plugins_url('/static/help/http_method-3.png', dirname( __FILE__ ) ) .'" target="_blank" rel="noopener noreferrer">', '</a>') ?>
+				</p>
+				<p class="description" id="ct-2"<?php echo code_profiler_showhide( $cp_options['mem_content_type'], 2 ) ?>>
+					<?php printf( esc_html__('Optional JSON-encoded payload, on a single line.', 'code-profiler'), '<code>name=value</code>') ?> <?php printf( esc_html__('%sView example%s', 'code-profiler'), '<a href="'. plugins_url('/static/help/http_method-2.png', dirname( __FILE__ ) ) .'" target="_blank" rel="noopener noreferrer">', '</a>') ?>
 				</p>
 			</td>
 		</tr>

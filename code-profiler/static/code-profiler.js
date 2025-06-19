@@ -120,10 +120,16 @@ function cpjs_get_post( id ) {
 function cpjs_content_type( value ) {
 	if ( value == 1 ) {
 		jQuery('#ct-1').slideDown();
+		jQuery('#ct-3').slideUp();
 		jQuery('#ct-2').slideUp();
-	} else {
+	} else if ( value == 2 ) {
 		jQuery('#ct-2').slideDown();
+		jQuery('#ct-3').slideUp();
 		jQuery('#ct-1').slideUp();
+	} else {
+		jQuery('#ct-3').slideDown();
+		jQuery('#ct-1').slideUp();
+		jQuery('#ct-2').slideUp();
 	}
 }
 
@@ -139,6 +145,13 @@ function cpjs_isJSON( data ) {
 		// Not a JSON-encoded string
 		return null;
 	}
+}
+
+function cpjs_ismultiline( data ) {
+	if ( data.match( /[\n\r]/) ) {
+		return true;
+	}
+	return false;
 }
 
 // =====================================================================
@@ -254,11 +267,18 @@ function cpjs_start_profiler() {
 
 	//Content type
 	var ct = jQuery('#id-content-type').val();
-	// application/json
 	if ( ct == 2 ) {
+		// application/json
 		if ( cpjs_isJSON( payload ) == null ) {
 			alert( cpi18n.missing_ajax );
 			jQuery('#user-name').focus();
+			return;
+		}
+	} else if ( ct == 3 ) {
+		// Raw format must be on one single line
+		if ( cpjs_ismultiline( payload.trim() ) == true ) {
+			alert( cpi18n.multiline_raw );
+			jQuery('#post-value').focus();
 			return;
 		}
 	}

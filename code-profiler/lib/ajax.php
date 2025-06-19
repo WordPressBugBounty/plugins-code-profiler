@@ -366,11 +366,12 @@ function codeprofiler_start_profiler() {
 
 		// Content-type
 		$content_type = [
-			1 => 'application/x-www-form-urlencoded',
+			1 => 'application/x-www-form-urlencoded', // Formatted
+			3 => 'application/x-www-form-urlencoded', // Raw
 			2 => 'application/json'
 		];
 		if ( empty( $_POST['content_type'] ) ||
-			! in_array( $_POST['content_type'], [ 1, 2 ] ) ) {
+			! in_array( $_POST['content_type'], [ 1, 2, 3 ] ) ) {
 
 			$cp_options['mem_content_type'] = 1;
 		} else {
@@ -385,8 +386,9 @@ function codeprofiler_start_profiler() {
 			code_profiler_log_debug(
 				esc_html__('Building POST payload', 'code-profiler')
 			);
-
-			// application/x-www-form-urlencoded
+			/**
+			 * application/x-www-form-urlencoded (formatted)
+			 */
 			if ( $cp_options['mem_content_type'] == 1 ) {
 				$payload_array = explode( PHP_EOL, $_payload );
 				foreach( $payload_array as $item ) {
@@ -397,8 +399,18 @@ function codeprofiler_start_profiler() {
 						$headers['body'][ $payload[0] ] = $payload[1];
 					}
 				}
+			/**
+			 * application/x-www-form-urlencoded (raw)
+			 */
+			} elseif ( $cp_options['mem_content_type'] == 3 ) {
+				parse_str( $_payload , $payload_array );
+				foreach( $payload_array as $key => $item ) {
+					$headers['body'][ $key ] = $item;
+				}
+			/**
+			 * application/json
+			 */
 			} else {
-
 				$headers['body'] = $_payload;
 			}
 			$cp_options['payload'] = json_encode( $_payload );
@@ -503,42 +515,57 @@ function codeprofiler_start_profiler() {
 		/**
 		 * Parse headers.
 		 */
-		$headers = "HTTP {$res['response']['code']} {$res['response']['message']}\n";
+		$response_headers = "HTTP {$res['response']['code']} {$res['response']['message']}\n";
 
 		foreach( $res['headers'] as $key => $value ) {
 			/**
 			 * Remove cookies.
 			 */
 			if ( $key == 'set-cookie') {
-				$headers .= ucfirst( $key ) .': *** '. __('Removed', 'code-profiler') ." ***\n";
+				$response_headers .= ucfirst( $key ) .': *** '. __('Removed', 'code-profiler') ." ***\n";
 			} else {
 				/**
 				 * HTTP headers can contain arrays.
 				 */
 				if ( is_array( $value ) ) {
 					foreach( $value as $k => $v ) {
-						$headers .= ucfirst( $key ) .": $v\n";
+						$response_headers .= ucfirst( $key ) .": $v\n";
 					}
 				} else {
-					$headers .= ucfirst( $key ) .": $value\n";
+					$response_headers .= ucfirst( $key ) .": $value\n";
 				}
 			}
 		}
 		/**
 		 * Save to the log.
 		 */
-		file_put_contents( $last_log[0],
-			"==================================================\n".
+		$contents = "==================================================\n".
 			__('Requested page:', 'code-profiler') ."\n\n".
 			"$raw_url\n".
-			"==================================================\n".
-			__('Response headers:', 'code-profiler') ."\n\n".
-			$headers .
+			"==================================================\n";
+
+		if ( ! empty( $headers['body'] ) ) {
+
+			$contents .= __('Post payload:', 'code-profiler') ."\n\n";
+			if ( $cp_options['mem_content_type'] == 2 ) {
+				/**
+				 * application/json: must be decoded.
+				 */
+				$contents .= print_r( json_decode( $headers['body'] ), true );
+			} else {
+				$contents .= print_r( $headers['body'], true );
+			}
+			$contents .= "\n==================================================\n";
+		}
+
+		$contents .= __('Response headers:', 'code-profiler') ."\n\n".
+			$response_headers .
 			"==================================================\n".
 			__('Response body:', 'code-profiler') ."\n\n".
 			print_r( $res['body'], true ).
-			"\n==================================================\n"
-		);
+			"\n==================================================\n";
+
+		file_put_contents( $last_log[0], $contents );
 	}
 
 	// HTTP status code

@@ -158,7 +158,7 @@ echo code_profiler_display_tabs( 4 );
 				echo esc_textarea( $log );
 			}
 			?></textarea>
-			<p class="description"><?php esc_html_e('The log shows the HTTP response headers and body for the last profile.', 'code-profiler') ?></p>
+			<p class="description"><?php esc_html_e('The log shows the HTTP request and its payload, the response headers and body for the last profile.', 'code-profiler') ?></p>
 		</td>
 	</tr>
 </table>

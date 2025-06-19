@@ -289,7 +289,7 @@ $cp_options = get_option('code-profiler');
 		?>
 		<tr>
 			<th scope="row"><?php esc_html_e('PHP Error Logging', 'code-profiler') ?> <span class="code-profiler-tip" data-tip="<?php
-				esc_attr_e('This option will enable PHP error logging. The log will be saved by default to "/wp-content/debug.log", unless you configured PHP or WordPress to use a different path.', 'code-profiler');
+				esc_attr_e('This option will enable PHP error logging when the profiler is running. The log will be saved by default to "/wp-content/debug.log", unless you configured PHP or WordPress to use a different path.', 'code-profiler');
 				?>"></span>
 			</th>
 			<td>

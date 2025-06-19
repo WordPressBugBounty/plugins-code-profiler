@@ -51,7 +51,6 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 	 */
 	function no_items() {
 		esc_html_e('No profile found.', 'code-profiler');
-		$this->is_empty = 1;
 	}
 
 
@@ -112,13 +111,13 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 	function get_columns(){
 		return [
 			'cb'			=> '<input type="checkbox" />',
-			'profile'	=> esc_html__( 'Profile', 'code-profiler' ),
-			'date'		=> esc_html__( 'Date', 'code-profiler' ),
-			'items'		=> esc_html__( 'Items', 'code-profiler' ),
-			'time'		=> esc_html__( 'Time', 'code-profiler' ),
-			'mem'			=> esc_html__( 'Memory', 'code-profiler' ),
-			'io'			=> esc_html__( 'File I/O', 'code-profiler' ),
-			'queries'	=> esc_html__( 'SQL', 'code-profiler' )
+			'profile'	=> esc_html__('Profile', 'code-profiler'),
+			'date'		=> esc_html__('Date', 'code-profiler'),
+			'items'		=> esc_html__('Items', 'code-profiler'),
+			'time'		=> esc_html__('Time', 'code-profiler'),
+			'mem'			=> esc_html__('Memory', 'code-profiler'),
+			'io'			=> esc_html__('File I/O', 'code-profiler'),
+			'queries'	=> esc_html__('SQL', 'code-profiler')
 		];
     }
 
@@ -171,8 +170,8 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 				esc_html__('Quick Edit')
 			),
 			'delete' => sprintf(
-				'<a href="?page=code-profiler&cptab=profiles_list&action=%s&profiles[]=%s&_wpnonce=%s&orderby=%s&order=%s" '.
-				'onclick="return cpjs_delete_profile();">%s</a>',
+				'<a href="?page=code-profiler&cptab=profiles_list&action=%s&profiles[]=%s'.
+				'&_wpnonce=%s&orderby=%s&order=%s" onclick="return cpjs_delete_profile();">%s</a>',
 				'delete_profiles',
 				esc_attr( $item['ID'] ),
 				wp_create_nonce('bulk-'. $this->_args['plural'] ),
