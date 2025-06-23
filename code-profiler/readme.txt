@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.7.6
+Stable tag: 1.7.7
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,11 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.7.7 (23 June, 2025) =
+
+* Fixed an issue where the profiler wasn't able to detect if the connection was over HTTPS when running WP CLI.
+* Fixed a potential "Function _load_textdomain_just_in_time was called incorrectly" notice when running WP CLI.
 
 = 1.7.6 (19 June, 2025) =
 

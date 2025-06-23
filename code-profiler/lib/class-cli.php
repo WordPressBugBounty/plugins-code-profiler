@@ -30,8 +30,14 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 		$this->is_enabled();
 
 		$_POST['cp_nonce'] = wp_create_nonce('start_profiler_nonce');
-		$_POST['post']     = home_url( '/' );
-		$_POST['where']    = 'frontend';
+
+		$_POST['post'] = home_url( '/' );
+		// Mark the connection as 'HTTPS' if needed.
+		if ( strtolower( parse_url( $_POST['post'], PHP_URL_SCHEME ) ) == 'https') {
+			$_SERVER['HTTPS'] = 'on';
+		}
+
+		$_POST['where'] = 'frontend';
 		// Detect if we're authenticated or not
 		if ( is_user_logged_in() === true ) {
 			$_POST['user']		= 'authenticated';
@@ -283,7 +289,11 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 
 }
 
-WP_CLI::add_command('code-profiler', 'CodeProfiler_CLI', ['shortdesc' => __('Profile your blog with Code Profiler.', 'code-profiler') ] );
+WP_CLI::add_command(
+	'code-profiler',
+	'CodeProfiler_CLI',
+	['shortdesc' => 'Profile your blog with Code Profiler.']
+);
 
 // =====================================================================
 // EOF
