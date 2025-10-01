@@ -37,15 +37,15 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			$_SERVER['HTTPS'] = 'on';
 		}
 
-		$_POST['where'] = 'frontend';
+		$_POST['x_end'] = 'frontend';
 		// Detect if we're authenticated or not
 		if ( is_user_logged_in() === true ) {
-			$_POST['user']		= 'authenticated';
+			$_POST['x_auth']		= 'authenticated';
 		} else {
-			$_POST['user']		= 'unauthenticated';
+			$_POST['x_auth']		= 'unauthenticated';
 		}
-		$_POST['profile']  = 'WP-CLI_' . time();
-		$_POST['ua']       = 'Firefox';
+		$_POST['profile']		= 'WP-CLI_' . time();
+		$_POST['user_agent']	= 'Firefox';
 
 		if (! empty( $assoc_args['dest'] ) ) {
 			$message = sprintf(
@@ -171,7 +171,7 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 		foreach( $slugs as $k => $v ) {
 
 			// Display name, time and %
-			if ( $cp_options['display_name'] == 'slug' ) {
+			if ( isset( $cp_options['display_name'] ) && $cp_options['display_name'] == 'slug' ) {
 				$name = $v[0];
 			} else {
 				$name = $v[2];

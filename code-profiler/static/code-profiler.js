@@ -196,7 +196,13 @@ function cpjs_delete_log() {
 // AJAX call to start the profiler.
 
 function cpjs_start_profiler() {
+
 	'use strict';
+
+	jQuery('html, body').animate( {
+		scrollTop: jQuery('#button-adv-settings').offset().top
+	}, 1000 );
+
 	// Get the nonce
 	var cp_nonce = jQuery('#cp_nonce').val();
 	if ( cp_nonce == '') {
@@ -206,14 +212,14 @@ function cpjs_start_profiler() {
 
 	// Get the scan type (frontend/backend)
 	var post;
-	var where = jQuery('input[name="where"]:checked').val();
-	if ( where == 'frontend') {
+	var x_end = jQuery('input[name="x_end"]:checked').val();
+	if ( x_end == 'frontend') {
 		post = jQuery('#id-frontend').val();
 
-	} else if ( where == 'backend') {
+	} else if ( x_end == 'backend') {
 		post = jQuery('#id-backend').val();
 
-	} else if ( where == 'custom') {
+	} else if ( x_end == 'custom') {
 		post = jQuery('#id-custom').val().trim(); // Trim user input
 
 	} else {
@@ -233,14 +239,14 @@ function cpjs_start_profiler() {
 		return;
 	}
 
-	var user = jQuery('input[name="user"]:checked').val();
-	if ( user == '') {
+	var x_auth = jQuery('input[name="x_auth"]:checked').val();
+	if ( x_auth == '') {
 		alert( cpi18n.missing_userauth );
 		return;
 	}
 
 	var username = jQuery('#user-name').val().trim(); // Trim user input
-	if ( user == 'authenticated') {
+	if ( x_auth == 'authenticated') {
 		if ( username == '') {
 			alert( cpi18n.missing_username );
 			jQuery('#user-name').focus();
@@ -248,9 +254,9 @@ function cpjs_start_profiler() {
 		}
 	}
 
-	var ua = jQuery('#ua-id').val();
-	if ( ua == 'undefined') {
-		ua = 'FireFox';
+	var user_agent = jQuery('#ua-id').val();
+	if ( user_agent == 'undefined') {
+		user_agent = 'FireFox';
 	}
 
 	var theme = jQuery('#id-theme').val();
@@ -298,18 +304,18 @@ function cpjs_start_profiler() {
 	var data = {
 		'action': 'codeprofiler_start_profiler',
 		'cp_nonce': cp_nonce,
-		'where': where,
+		'x_end': x_end,
 		'post': post,
 		'content_type': ct,
 		'profile': profile,
-		'user': user,
+		'x_auth': x_auth,
 		'username': username,
 		'cookies': cookies,
 		'custom_headers': headers,
 		'exclusions': exclusions,
 		'method': method,
 		'payload': payload,
-		'ua': ua,
+		'user_agent': user_agent,
 		'theme': theme
 	};
 	// Send the request via AJAX

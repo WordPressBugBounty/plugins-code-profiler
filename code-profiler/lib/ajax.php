@@ -27,6 +27,11 @@ function codeprofiler_start_profiler() {
 	code_profiler_hide_errors();
 
 	$cp_options = get_option('code-profiler');
+	if (! empty( $cp_options['mem'] ) ) {
+		$mem = $cp_options['mem'];
+	} else {
+		$mem = [];
+	}
 
 	code_profiler_log_debug(
 		esc_html__('Entering AJAX endpoint (profiler initialization)', 'code-profiler')
@@ -77,17 +82,17 @@ function codeprofiler_start_profiler() {
 	);
 
 	// Frontend or backend
-	if ( empty( $_POST['where'] ) ||
-		! in_array( $_POST['where'], ['frontend', 'backend', 'custom'] ) ) {
+	if ( empty( $_POST['x_end'] ) ||
+		! in_array( $_POST['x_end'], ['frontend', 'backend', 'custom'] ) ) {
 
 		$msg = sprintf(
-			esc_html__('Missing or incorrect parameter (%s)', 'code-profiler'), 'where'
+			esc_html__('Missing or incorrect parameter (%s)', 'code-profiler'), 'x_end'
 		);
 		$response['message'] = $msg;
 		code_profiler_log_error( $msg );
 		code_profiler_wp_send_json( $response );
 	}
-	$cp_options['mem_where'] = $_POST['where'];
+	$mem['x_end'] = $_POST['x_end'];
 
 	code_profiler_log_debug(
 		esc_html__('Retrieving parameters #2', 'code-profiler')
@@ -99,7 +104,7 @@ function codeprofiler_start_profiler() {
 		code_profiler_log_error( $msg );
 		code_profiler_wp_send_json( $response );
 	}
-	$cp_options['mem_post'] = $_POST['post'];
+	$mem['post'] = $_POST['post'];
 
 	// Make sure we have no more that 4 decimals, because when returning
 	// it via AJAX, it will display more decimals than that
@@ -110,10 +115,10 @@ function codeprofiler_start_profiler() {
 	);
 
 	// Authentication
-	if ( empty( $_POST['user'] ) || $_POST['user'] != 'authenticated' ) {
-		$_POST['user'] = 'unauthenticated';
+	if ( empty( $_POST['x_auth'] ) || $_POST['x_auth'] != 'authenticated' ) {
+		$_POST['x_auth'] = 'unauthenticated';
 	}
-	$cp_options['mem_user'] = $_POST['user'];
+	$mem['x_auth'] = $_POST['x_auth'];
 
 	code_profiler_log_debug(
 		esc_html__('Retrieving parameters #4', 'code-profiler')
@@ -142,14 +147,14 @@ function codeprofiler_start_profiler() {
 	);
 
 	// User-agent
-	if ( empty( $_POST['ua'] ) ) {
-		$ua = 'Firefox';
+	if ( empty( $_POST['user_agent'] ) ) {
+		$user_agent = 'Firefox';
 	} else {
-		$ua = sanitize_text_field( $_POST['ua'] );
+		$user_agent = sanitize_text_field( $_POST['user_agent'] );
 	}
 	foreach( CODE_PROFILER_UA as $types => $types_array ) {
 		foreach( $types_array as $name => $value ) {
-			if ( $ua == $name ) {
+			if ( $user_agent == $name ) {
 				$ua_signature = $value;
 				break;
 			}
@@ -158,19 +163,19 @@ function codeprofiler_start_profiler() {
 	if ( empty( $ua_signature ) ) {
 		$ua_signature = CODE_PROFILER_UA['Desktop']['Firefox'];
 	}
-	$cp_options['ua'] = $ua;
+	$mem['user_agent'] = $user_agent;
 
 	// Theme
 	$themes = code_profiler_get_themes();
 	if ( empty( $_POST['theme'] ) || empty( $themes[ $_POST['theme'] ] ) ) {
 		$theme = '';
-		unset( $cp_options['mem_theme'] );
+		unset( $mem['theme'] );
 	} else {
 		code_profiler_log_debug(
 			esc_html__('Retrieving parameters #6', 'code-profiler')
 		);
 		$theme = $_POST['theme'];
-		$cp_options['mem_theme'] = $theme;
+		$mem['theme'] = $theme;
 		// Append the template to the stylesheet
 		if (! empty( $themes[ $theme ]['t'] ) ) {
 			$theme .= "::{$themes[ $theme ]['t']}";
@@ -245,9 +250,9 @@ function codeprofiler_start_profiler() {
 		}
 	}
 	if (! empty( $is_custom_headers ) ) {
-		$cp_options['custom_headers']	= json_encode( $is_custom_headers );
+		$mem['custom_headers']	= json_encode( $is_custom_headers );
 	} else {
-		unset( $cp_options['custom_headers'] );
+		unset( $mem['custom_headers'] );
 	}
 
 	code_profiler_log_debug(
@@ -265,7 +270,7 @@ function codeprofiler_start_profiler() {
 		$headers['headers']['Authorization'] = $_POST['Authorization'];
 	}
 
-	if ( $_POST['user'] == 'authenticated') {
+	if ( $_POST['x_auth'] == 'authenticated') {
 
 		code_profiler_log_debug(
 			esc_html__('Creating authentication cookies', 'code-profiler')
@@ -296,7 +301,7 @@ function codeprofiler_start_profiler() {
 				code_profiler_log_error( $msg );
 				code_profiler_wp_send_json( $response );
 			}
-			$cp_options['mem_username'] = strtolower( $username );
+			$mem['username'] = strtolower( $username );
 			$headers['cookies'][ $cookie_auth ] = wp_generate_auth_cookie(
 				$user_object->ID,
 				time() + 180,
@@ -362,7 +367,7 @@ function codeprofiler_start_profiler() {
 	// GET or POST method
 	if (! empty( $_POST['method'] ) && $_POST['method'] == 'post') {
 		$safe_method = 'wp_safe_remote_post';
-		$cp_options['mem_method'] = 'post';
+		$mem['method'] = 'post';
 
 		// Content-type
 		$content_type = [
@@ -373,11 +378,11 @@ function codeprofiler_start_profiler() {
 		if ( empty( $_POST['content_type'] ) ||
 			! in_array( $_POST['content_type'], [ 1, 2, 3 ] ) ) {
 
-			$cp_options['mem_content_type'] = 1;
+			$mem['content_type'] = 1;
 		} else {
-			$cp_options['mem_content_type'] = (int) $_POST['content_type'];
+			$mem['content_type'] = (int) $_POST['content_type'];
 		}
-		$headers['headers']['content-type'] = $content_type[ $cp_options['mem_content_type'] ];
+		$headers['headers']['content-type'] = $content_type[ $mem['content_type'] ];
 
 		// Optional POST payload
 		if (! empty( $_POST['payload'] ) ) {
@@ -389,7 +394,7 @@ function codeprofiler_start_profiler() {
 			/**
 			 * application/x-www-form-urlencoded (formatted)
 			 */
-			if ( $cp_options['mem_content_type'] == 1 ) {
+			if ( $mem['content_type'] == 1 ) {
 				$payload_array = explode( PHP_EOL, $_payload );
 				foreach( $payload_array as $item ) {
 					$payload = explode('=', trim( $item ), 2 );
@@ -402,7 +407,7 @@ function codeprofiler_start_profiler() {
 			/**
 			 * application/x-www-form-urlencoded (raw)
 			 */
-			} elseif ( $cp_options['mem_content_type'] == 3 ) {
+			} elseif ( $mem['content_type'] == 3 ) {
 				parse_str( $_payload , $payload_array );
 				foreach( $payload_array as $key => $item ) {
 					$headers['body'][ $key ] = $item;
@@ -413,16 +418,16 @@ function codeprofiler_start_profiler() {
 			} else {
 				$headers['body'] = $_payload;
 			}
-			$cp_options['payload'] = json_encode( $_payload );
+			$mem['payload'] = json_encode( $_payload );
 
 		} else {
 			// POST request without a payload
-			unset( $cp_options['payload'] );
+			unset( $mem['payload'] );
 		}
 
 	} else {
 		$safe_method = 'wp_safe_remote_get';
-		$cp_options['mem_method'] = 'get';
+		$mem['method'] = 'get';
 	}
 
 	// Optional user-defined cookies
@@ -441,9 +446,9 @@ function codeprofiler_start_profiler() {
 				$headers['cookies'][ $cookie[0] ] = $cookie[1];
 			}
 		}
-		$cp_options['cookies'] = json_encode( $_POST['cookies'] );
+		$mem['cookies'] = json_encode( $_POST['cookies'] );
 	} else {
-		unset( $cp_options['cookies'] );
+		unset( $mem['cookies'] );
 	}
 
 	/**
@@ -465,12 +470,21 @@ function codeprofiler_start_profiler() {
 	$exclusions = array_unique( $tmp_exclusions );
 
 	if ( $exclusions) {
-		$cp_options['exclusions'] = json_encode( $exclusions );
+		$mem['exclusions'] = json_encode( $exclusions );
 	} else {
-		unset( $cp_options['exclusions'] );
+		unset( $mem['exclusions'] );
 	}
 
+	$cp_options['mem'] = $mem;
 	update_option('code-profiler', $cp_options );
+
+	/**
+	 * Save the profile configuration into a temporary file (used by the re-run feature).
+	 */
+	file_put_contents(
+		CODE_PROFILER_UPLOAD_DIR ."/$microtime.". CODE_PROFILER_TMP_RERUN_LOG,
+		json_encode( $mem )
+	);
 
 	code_profiler_log_debug(
 		esc_html__('Sending HTTP request', 'code-profiler')
@@ -547,7 +561,7 @@ function codeprofiler_start_profiler() {
 		if ( ! empty( $headers['body'] ) ) {
 
 			$contents .= __('Post payload:', 'code-profiler') ."\n\n";
-			if ( $cp_options['mem_content_type'] == 2 ) {
+			if ( $mem['content_type'] == 2 ) {
 				/**
 				 * application/json: must be decoded.
 				 */
@@ -809,6 +823,25 @@ function codeprofiler_rename() {
 			'The operation failed.', 'code-profiler'
 		);
 		wp_send_json( $response );
+	}
+
+	/**
+	 * Rename the profile in the summary file,
+	 * so that it can be used by the re-run feature.
+	 */
+	if (! empty( $match[1] ) &&
+		is_file( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.$new_name.summary.profile" ) ) {
+
+		$data = json_decode(
+			file_get_contents( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.$new_name.summary.profile" ),
+			true
+		);
+		if (! empty( $data['rerun']['profile'] ) ) {
+			$data['rerun']['profile'] = $new_name;
+			file_put_contents(
+				CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.$new_name.summary.profile", json_encode( $data )
+			);
+		}
 	}
 
 	$response['status']  = 'success';

@@ -29,6 +29,7 @@ class CodeProfiler_Profiler {
 	private $tmp_diskio;
 	private $tmp_calls;
 	private $tmp_connections;
+	private $tmp_rerun;
 
 	/**
 	 * Initialize
@@ -47,6 +48,8 @@ class CodeProfiler_Profiler {
 											CODE_PROFILER_TMP_DISKIO_LOG;
 		$this->tmp_connections	= CODE_PROFILER_UPLOAD_DIR ."/$microtime." .
 											CODE_PROFILER_TMP_CONNECTIONS_LOG;
+		$this->tmp_rerun			= CODE_PROFILER_UPLOAD_DIR ."/$microtime." .
+											CODE_PROFILER_TMP_RERUN_LOG;
 
 		if ( function_exists('hrtime') ) {
 			// PHP >=7.3
@@ -149,6 +152,12 @@ class CodeProfiler_Profiler {
 
 		fclose( self::$fh );
 
+		// Summary file (metadata)
+		$summary = [];
+		if ( is_file( $this->tmp_rerun ) ) {
+			$summary['rerun'] = json_decode( file_get_contents( $this->tmp_rerun ), true );
+			unlink( $this->tmp_rerun );
+		}
 		$summary['memory']		= memory_get_peak_usage();
 		$summary['queries']		= get_num_queries() - 2;
 		$summary['precision']	= CODE_PROFILER_TICKS;

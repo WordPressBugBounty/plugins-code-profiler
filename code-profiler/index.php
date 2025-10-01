@@ -5,14 +5,14 @@ Plugin URI: https://nintechnet.com/codeprofiler/
 Description: A profiler to measure the performance of your WordPress plugins and themes.
 Author: Jerome Bruandet ~ NinTechNet Ltd.
 Author URI: https://nintechnet.com/
-Version: 1.7.7
+Version: 1.8
 Network: true
 License: GPLv3 or later
 Text Domain: code-profiler
 Domain Path: /languages
 */
 
-define('CODE_PROFILER_VERSION', '1.7.7');
+define('CODE_PROFILER_VERSION', '1.8');
 /**
  +=====================================================================+
  |    ____          _        ____             __ _ _                   |
@@ -29,14 +29,16 @@ if (! defined('ABSPATH') ) {
 	die('Forbidden');
 }
 
-// ===================================================================== 2023-08-20
+// =====================================================================
 // Menu functions
 require __DIR__ .'/lib/menu.php';
 // Helper (can be already loaded by the MU plugin)
 require_once __DIR__ .'/lib/helper.php';
 // AJAX calls
 require __DIR__ .'/lib/ajax.php';
-// ===================================================================== 2023-06-17
+// Scheduled tasks
+require_once __DIR__ .'/lib/class-wp-cron.php';
+// =====================================================================
 // Activation: make sure the blog meets the requirements.
 
 function code_profiler_activate() {
@@ -78,6 +80,13 @@ function code_profiler_activate() {
 	if ( $cp_options === false ) {
 		code_profiler_default_options();
 	}
+
+	/**
+	 * Install scheduled tasks on the main site only.
+	 */
+	if ( is_main_site() ) {
+		CodeProfiler_WPCron::install();
+	}
 }
 
 register_activation_hook( __FILE__, 'code_profiler_activate');
@@ -95,6 +104,11 @@ function code_profiler_deactivate() {
 	if ( file_exists( WPMU_PLUGIN_DIR .'/'. CODE_PROFILER_MUPLUGIN ) ) {
 		unlink( WPMU_PLUGIN_DIR .'/'. CODE_PROFILER_MUPLUGIN );
 	}
+
+	/**
+	 * Uninstall scheduled tasks.
+	 */
+	CodeProfiler_WPCron::uninstall();
 }
 
 register_deactivation_hook( __FILE__, 'code_profiler_deactivate');

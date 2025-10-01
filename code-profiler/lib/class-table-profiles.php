@@ -157,6 +157,23 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 		$orderby	= (! empty( $_GET['orderby'] ) ) ? sanitize_key( $_GET['orderby'] ) : 'ID';
 		$order	= (! empty( $_GET['order'] ) ) ? sanitize_key( $_GET['order'] ) : 'asc';
 
+		/**
+		 * The option to re-run a profile is only available with profiles created with v1.8.
+		 */
+		if (! empty( $item['rerun'] ) ) {
+			$rerun = sprintf(
+				'<a href="?page=code-profiler&cptab=profiler&action=rerun&profiles[]=%1$s" title="'.
+				esc_attr__('Re-run the profile with the same options and parameters.', 'code-profiler') .
+				'">%2$s</a>',
+				esc_attr( $item['ID'] ),
+				esc_html__('Re-run', 'code-profiler')
+			);
+		} else {
+			$rerun = '<font style="cursor:not-allowed" title="'.
+				esc_attr__('This feature is only available with profiles created with Code Profiler v1.8+',
+				'code-profiler') .'">'. esc_html__('Re-run', 'code-profiler') .'</font>';
+		}
+
 		$actions = array(
 			'view'   => sprintf(
 				'<a href="?page=code-profiler&cptab=profiles_list&action=%s&id=%s&section=1">%s</a>',
@@ -169,6 +186,7 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 				esc_attr( $this->row_count ),
 				esc_html__('Quick Edit')
 			),
+			'rerun'	=> $rerun,
 			'delete' => sprintf(
 				'<a href="?page=code-profiler&cptab=profiles_list&action=%s&profiles[]=%s'.
 				'&_wpnonce=%s&orderby=%s&order=%s" onclick="return cpjs_delete_profile();">%s</a>',
@@ -277,7 +295,7 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 					foreach( $this->default_files as $pname ) {
 						// Ignore these ones, there aren't mandatory
 						if ( in_array( $pname, [ 'composer', 'summary' ] ) ) { continue; }
-						if ( file_exists( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" ) ) {
+						if ( is_file( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" ) ) {
 							$fsize += filesize( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" );
 						} else {
 							$error = 1;
@@ -287,7 +305,7 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 					// Delete if incomplete
 					if ( $error ) {
 						foreach( $this->default_files as $pname ) {
-							if ( file_exists( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" ) ) {
+							if ( is_file( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" ) ) {
 								unlink( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" );
 							}
 						}
@@ -325,6 +343,12 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 					if ( empty( $summary['items'] ) ) 	{ $summary['items']		= '-'; }
 					if ( empty( $summary['io'] ) ) 		{ $summary['io']			= '-'; }
 
+					/**
+					 * Check if we can re-run the profile (v1.8+).
+					 */
+					if (! empty( $summary['rerun'] ) ) {
+						$profiles[$count]['rerun'] = true;
+					}
 					$fsize 								+= filesize( $path );
 					$profiles[$count]['ID'] 		= $match[1];
 					$profiles[$count]['profile']	= esc_html( $match[2] );
@@ -384,8 +408,8 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 				continue;
 			}
 			foreach( $this->default_files as $pname ) {
-				if ( file_exists( "$profile_name.$pname.profile" ) ) {
-					unlink( "$profile_name.$pname.profile" );
+				if ( is_file( "$profile_name.$pname.profile") ) {
+					unlink( "$profile_name.$pname.profile");
 				}
 			}
 		}

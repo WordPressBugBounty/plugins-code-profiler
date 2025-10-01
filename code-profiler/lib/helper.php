@@ -33,6 +33,7 @@ if (! defined('CODE_PROFILER_UPLOAD_DIR') ) {
 define('CODE_PROFILER_LOG', CODE_PROFILER_UPLOAD_DIR .'/log.php');
 define('CODE_PROFILER_TMP_IOSTATS_LOG', 'iostats.tmp');
 define('CODE_PROFILER_TMP_SUMMARY_LOG', 'summary.tmp');
+define('CODE_PROFILER_TMP_RERUN_LOG', 'rerun.tmp');
 define('CODE_PROFILER_TMP_CALLS_LOG', 'calls.tmp');
 define('CODE_PROFILER_TMP_DISKIO_LOG', 'diskio.tmp');
 define('CODE_PROFILER_TMP_CONNECTIONS_LOG', 'connections.tmp');
@@ -128,7 +129,13 @@ add_action('http_api_curl', 'code_profiler_curl_timeout', 1000, 3 );
 
 function code_profiler_init_update() {
 
-	$cp_options = get_option('code-profiler');
+	if ( ( $cp_options = get_option('code-profiler') ) == false ) {
+		/**
+		 * "Automatic conversion of false to array is deprecated" since PHP 8.1
+		 */
+		$cp_options = [];
+	}
+
 	if ( empty( $cp_options['version'] ) ||
 		version_compare( $cp_options['version'], CODE_PROFILER_VERSION, '<') ) {
 
@@ -157,6 +164,56 @@ function code_profiler_init_update() {
 		// Version 1.7.5
 		if (! isset( $cp_options['php_error'] ) ) {
 			$cp_options['php_error'] = 1;
+		}
+
+		// Version 1.8
+		if ( isset( $cp_options['mem_where'] ) ) {
+			$cp_options['mem']['x_end'] = $cp_options['mem_where'];
+			unset( $cp_options['mem_where'] );
+		}
+		if ( isset( $cp_options['mem_post'] ) ) {
+			$cp_options['mem']['post'] = $cp_options['mem_post'];
+			unset( $cp_options['mem_post'] );
+		}
+		if ( isset( $cp_options['mem_user'] ) ) {
+			$cp_options['mem']['x_auth'] = $cp_options['mem_user'];
+			unset( $cp_options['mem_user'] );
+		}
+		if ( isset( $cp_options['mem_username'] ) ) {
+			$cp_options['mem']['username'] = $cp_options['mem_username'];
+			unset( $cp_options['mem_username'] );
+		}
+		if ( isset( $cp_options['mem_method'] ) ) {
+			$cp_options['mem']['method'] = $cp_options['mem_method'];
+			unset( $cp_options['mem_method'] );
+		}
+		if ( isset( $cp_options['mem_theme'] ) ) {
+			$cp_options['mem']['theme'] = $cp_options['mem_theme'];
+			unset( $cp_options['mem_theme'] );
+		}
+		if ( isset( $cp_options['ua'] ) ) {
+			$cp_options['mem']['user_agent'] = $cp_options['ua'];
+			unset( $cp_options['ua'] );
+		}
+		if ( isset( $cp_options['cookies'] ) ) {
+			$cp_options['mem']['cookies'] = $cp_options['cookies'];
+			unset( $cp_options['cookies'] );
+		}
+		if ( isset( $cp_options['mem_content_type'] ) ) {
+			$cp_options['mem']['content_type'] = $cp_options['mem_content_type'];
+			unset( $cp_options['mem_content_type'] );
+		}
+		if ( isset( $cp_options['payload'] ) ) {
+			$cp_options['mem']['payload'] = $cp_options['payload'];
+			unset( $cp_options['payload'] );
+		}
+		if ( isset( $cp_options['custom_headers'] ) ) {
+			$cp_options['mem']['custom_headers'] = $cp_options['custom_headers'];
+			unset( $cp_options['custom_headers'] );
+		}
+		if ( isset( $cp_options['exclusions'] ) ) {
+			$cp_options['mem']['exclusions'] = $cp_options['exclusions'];
+			unset( $cp_options['exclusions'] );
 		}
 
 		// Update version in the DB

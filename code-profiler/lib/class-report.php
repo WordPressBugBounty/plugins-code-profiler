@@ -211,6 +211,12 @@ class CodeProfiler_Report {
 		$this->summary_list['time']		= $this->convert_2_seconds( $this->summary_list['time'] );
 		$this->summary_list['time']		= number_format( $this->summary_list['time'], 4 );
 
+		// Re-run options
+		if (! empty( $s['rerun'] ) ) {
+			$this->summary_list['rerun'] = $s['rerun'];
+			$this->summary_list['rerun']['profile'] = $this->profile_name;
+		}
+
 		// Save Code Profiler, PHP and WordPress' versions
 		global $wp_version;
 		$this->summary_list['versions']	= [
@@ -220,7 +226,6 @@ class CodeProfiler_Report {
 		];
 
 		file_put_contents( $summary_json, json_encode( $this->summary_list ) );
-
 	}
 
 

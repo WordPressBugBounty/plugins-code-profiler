@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 1.7.7
+Stable tag: 1.8
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,12 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.8 (1st October, 2025) =
+
+* This version introduces a new feature requested by many users: the possibility to re-run an existing profile. In the "Profiles List" table, click on the "Re-run" row action link and Code Profiler will run again the profile with the same options and parameters.
+* Fixed an "Automatic conversion of false to array is deprecated" message in PHP 8.1+.
+* Small fixes and adjustments.
 
 = 1.7.7 (23 June, 2025) =
 

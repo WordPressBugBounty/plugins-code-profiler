@@ -151,7 +151,6 @@ __('Starting Code Profiler Pro v%s (profile: %s)', 'code-profiler');
 __('Enter your license:', 'code-profiler');
 __('Run the profiler', 'code-profiler');
 __('Enter your license', 'code-profiler');
-__('Profile your blog with Code Profiler Pro.', 'code-profiler');
 __('The MU plugin isn\'t loaded, please check the log', 'code-profiler');
 __('Initializing Code Profiler Pro v%s on %s. Profile:  %s - %s', 'code-profiler');
 __('Temporarily disabling %s', 'code-profiler');
