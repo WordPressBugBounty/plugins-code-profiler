@@ -18,6 +18,7 @@ if (! defined('ABSPATH') ) { die('Forbidden'); }
 class CodeProfiler_CLI extends WP_CLI_Command {
 
 	private $file;
+	private $out		= 'view';
 	private $cmd_view = 'wp code-profiler view';
 	private $cmd_run  = 'wp code-profiler run';
 
@@ -56,6 +57,10 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			exit;
 		}
 
+		if (! empty( $assoc_args['out'] ) && in_array( $assoc_args['out'], ['json', 'csv'] ) ) {
+			$this->out = $assoc_args['out'];
+		}
+
 		// HTTP basic authentication
 		if (! empty( $assoc_args['u'] ) ) {
 			_e('Enter your HTTP basic authentication password:', 'code-profiler');
@@ -66,13 +71,15 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			$_POST['Authorization'] = 'Basic '. base64_encode( "{$assoc_args['u']}:{$password}" );
 		}
 
-		 WP_CLI::log( sprintf(
-			__('Starting Code Profiler v%s (profile: %s)', 'code-profiler'),
-			CODE_PROFILER_VERSION, $_POST['profile'] ) . "\n"
-		);
+		if ( $this->out == 'view') {
+			WP_CLI::log( sprintf(
+				__('Starting Code Profiler v%s (profile: %s)', 'code-profiler'),
+				CODE_PROFILER_VERSION, $_POST['profile'] ) . "\n"
+			);
 
-		$progress = \WP_CLI\Utils\make_progress_bar( '', 3 );
-		$progress->tick();
+			$progress = \WP_CLI\Utils\make_progress_bar( '', 3 );
+			$progress->tick();
+		}
 
 		// Run the profiler
 		$response = json_decode( codeprofiler_start_profiler(), true );
@@ -86,7 +93,9 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			exit;
 		}
 
-		$progress->tick();
+		if ( $this->out == 'view') {
+			$progress->tick();
+		}
 
 		// All good, run the parser
 		$_POST['microtime'] = $response['microtime'];
@@ -101,11 +110,13 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			exit;
 		}
 
-		$progress->tick();
-		$progress->finish();
+		if ( $this->out == 'view') {
+			$progress->tick();
+			$progress->finish();
+		}
 
 		// Run the parser and show the results
-		$this->view( $response['cp_profile'] );
+		$this->view( $args, $assoc_args, $response['cp_profile'] );
 
 		exit;
 	}
@@ -115,9 +126,13 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 	 * Display last created profile.
 	 *
 	 */
-	public function view( $profile = '') {
+	public function view( $args = [], $assoc_args = [], $profile = '') {
 
 		$this->is_enabled();
+
+		if (! empty( $assoc_args['out'] ) && in_array( $assoc_args['out'], ['json', 'csv'] ) ) {
+			$this->out = $assoc_args['out'];
+		}
 
 		// The profile was just created (`wp code-profiler run`)...
 		if (! empty( $profile ) ) {
@@ -148,13 +163,31 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			$this->file,
 			$match
 		);
-		$message = sprintf( __('Viewing: %s', 'code-profiler'), $match[1] );
-		$date = date('Y/m/d \@ H:i:s', filemtime( $this->file ) );
-		echo WP_CLI::colorize("\n%Y$message ~ $date%n\n\n");
 
-		// Display stats
-		$summary_file = str_replace('.slugs.profile', '', $this->file );
-		echo code_profiler_getsummarystats( $summary_file, 'text');
+		$cp_slug = __('Slug', 'code-profiler');
+		$cp_time = __('Execution time', 'code-profiler');
+		$cp_name = __('Name', 'code-profiler');
+		$cp_type = __('Type', 'code-profiler');
+
+		if ( $this->out == 'view' ) {
+			$buffer = '';
+			$message = sprintf( __('Viewing: %s', 'code-profiler'), $match[1] );
+			$date = date('Y/m/d \@ H:i:s', filemtime( $this->file ) );
+			echo WP_CLI::colorize("\n%Y$message ~ $date%n\n\n");
+			// Display stats
+			$summary_file = str_replace('.slugs.profile', '', $this->file );
+			echo code_profiler_getsummarystats( $summary_file, 'text');
+		/**
+		 * CSV output.
+		 */
+		} elseif ( $this->out == 'csv' ) {
+			$buffer = "$cp_slug,\"$cp_time\",$cp_name,$cp_type\n";
+		/**
+		 * JSON-encoded output.
+		 */
+		} else {
+			$buffer = [];
+		}
 
 		$slugs = $this->read_profile();
 
@@ -170,36 +203,56 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 
 		foreach( $slugs as $k => $v ) {
 
-			// Display name, time and %
-			if ( isset( $cp_options['display_name'] ) && $cp_options['display_name'] == 'slug' ) {
-				$name = $v[0];
-			} else {
-				$name = $v[2];
-			}
-			// Inform if it's the theme or a mu-plugin
-			if ( $v[3] == 'theme') {
-				$name .= ' (theme)';
-			} elseif ( $v[3] == 'mu-plugin') {
-				$name .= ' (mu-plugin)';
-			}
+			if ( $this->out == 'csv') {
+				$buffer .= "{$v[0]},{$v[1]},{$v[2]},{$v[3]}\n";
 
-			$time    = number_format( $v[1], 3                  );
-			$percent = number_format( $v[1] / $total_time * 100 );
-			$chars   = number_format( $percent * 80 / $coeff    );
-			// We use `echo` instead of `WP_CLI::log` because the layout could
-			// be all messed-up when some caching plugins such as LiteSpeed Cache
-			// are activated.
-			echo " $name | {$time}s | {$percent}%\n";
-			if (! $percent ) {
-				echo " \u{258C}\n\n";
+			} elseif( $this->out == 'json') {
+				$buffer[] = [
+ 					$cp_slug = $v[0],
+					$cp_time = $v[1],
+					$cp_name = $v[2],
+					$cp_type = $v[3]
+				];
+
 			} else {
-				$bar = '';
-				for ( $i = 0; $i < $chars; $i++ ) {
-					$bar .= ' ';
+				// Display name, time and %
+				if ( isset( $cp_options['display_name'] ) && $cp_options['display_name'] == 'slug' ) {
+					$name = $v[0];
+				} else {
+					$name = $v[2];
 				}
-				echo WP_CLI::colorize(" %8$bar%n\n\n");
+				// Inform if it's the theme or a mu-plugin
+				if ( $v[3] == 'theme') {
+					$name .= ' (theme)';
+				} elseif ( $v[3] == 'mu-plugin') {
+					$name .= ' (mu-plugin)';
+				}
+
+				$time    = number_format( $v[1], 3                  );
+				$percent = number_format( $v[1] / $total_time * 100 );
+				$chars   = number_format( $percent * 80 / $coeff    );
+				// We use `echo` instead of `WP_CLI::log` because the layout could
+				// be all messed-up when some caching plugins such as LiteSpeed Cache
+				// are activated.
+				echo " $name | {$time}s | {$percent}%\n";
+				if (! $percent ) {
+					echo " \u{258C}\n\n";
+				} else {
+					$bar = '';
+					for ( $i = 0; $i < $chars; $i++ ) {
+						$bar .= ' ';
+					}
+					echo WP_CLI::colorize(" %8$bar%n\n\n");
+				}
 			}
 		}
+		if ( $this->out == 'csv') {
+			echo $buffer;
+
+		} elseif ( $this->out == 'json' ) {
+			echo json_encode( $buffer );
+		}
+
 		exit;
 	}
 
@@ -280,10 +333,12 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			__('GLOBAL PARAMETERS', 'code-profiler') ."\n\n".
 			"  --dest=<URL to profile>  **". __('Pro version only', 'code-profiler') ."**\n".
 			"      ". __('Path to the WordPress page or post to profile. If missing, profile the frontend.', 'code-profiler') ."\n\n".
-			"  --user=<id|login|email>\n".
+			"  --user=<id|login|email> (optional)\n".
 			"      ". __('Run the profiler as the corresponding WordPress user. If missing, run as an unauthenticated user.', 'code-profiler') ."\n\n".
-			"  --u=<username>\n".
-			"      ". __('HTTP Basic authentication username. You will be prompted to enter your password.', 'code-profiler') ."\n\n");
+			"  --u=<username> (optional)\n".
+			"      ". __('HTTP Basic authentication username. You will be prompted to enter your password.', 'code-profiler') ."\n\n".
+			"  --out=<json|csv> (optional)\n".
+			"      ". __('Return the results in JSON-encoded or CSV format.', 'code-profiler') ."\n\n" );
 		exit;
 	}
 

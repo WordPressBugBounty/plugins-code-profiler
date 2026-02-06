@@ -39,6 +39,7 @@ define('CODE_PROFILER_TMP_DISKIO_LOG', 'diskio.tmp');
 define('CODE_PROFILER_TMP_CONNECTIONS_LOG', 'connections.tmp');
 define('CODE_PROFILER_UPDATE_NOTICE', '<div class="updated notice is-dismissible"><p>%s</p></div>');
 define('CODE_PROFILER_ERROR_NOTICE', '<div class="error notice is-dismissible"><p>%s</p></div>');
+define('CODE_PROFILER_WARNING_NOTICE', '<div class="notice notice-warning"><p>%s</p></div>');
 if (! defined('CODE_PROFILER_MUPLUGIN') ) {
 	// MU plugin's name can be defined in the wp-config.php
 	define('CODE_PROFILER_MUPLUGIN', '0----code-profiler.php');
@@ -54,19 +55,19 @@ function code_profiler_i18n_constants() {
 	if (! defined('CODE_PROFILER_UA') ) { // UA signatures can be user-defined in the wp-config.php
 		define ('CODE_PROFILER_UA', [
 			esc_html__('Desktop', 'code-profiler') => [
-				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:135.0) Gecko/20100101 Firefox/135.0',
+				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0',
 				'Chrome'				=> 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,'.
-											' like Gecko) Chrome/133.0.0.0 Safari/537.36',
+											' like Gecko) Chrome/143.0.0.0 Safari/537.36',
 				'Edge'				=> 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,'.
-											' like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/131.0.2903.86'
+											' like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.3650.96'
 			],
 			esc_html__('Mobile', 'code-profiler') => [
-				'Android Phone'	=> 'Mozilla/5.0 (Android 15; Mobile; rv:68.0) Gecko/68.0 Firefox/135.0',
-				'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 15.0; SAMSUNG-SM-T377A Build/NMF26X)'.
-										' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36',
-				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_7_2 like Mac OS X) AppleWebKit/605.1.15'.
-										' (KHTML, like Gecko) Version/17_7_2 Mobile/15E148 Safari/604.1',
-				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 17_7_2 like Mac OS X) AppleWebKit/605.1.15'.
+				'Android Phone'	=> 'Mozilla/5.0 (Android 16; Mobile; rv:68.0) Gecko/68.0 Firefox/146.0',
+				'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 16.0; SAMSUNG-SM-T377A Build/NMF26X)'.
+										' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.7499.147 Mobile Safari/537.36',
+				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_3 like Mac OS X) AppleWebKit/605.1.15'.
+											' (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1',
+				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 18_7_3 like Mac OS X) AppleWebKit/605.1.15'.
 										' (KHTML, like Gecko) GSA/213.0.449417121 Mobile/15E148 Safari/605.1.15'
 			],
 			esc_html__('Bot', 'code-profiler')    => [
@@ -136,85 +137,106 @@ function code_profiler_init_update() {
 		$cp_options = [];
 	}
 
-	if ( empty( $cp_options['version'] ) ||
-		version_compare( $cp_options['version'], CODE_PROFILER_VERSION, '<') ) {
-
+	if ( empty( $cp_options['version'] ) ) {
 		$cp_options['version'] = CODE_PROFILER_VERSION;
+		update_option('code-profiler', $cp_options );
+
+	} elseif ( version_compare( $cp_options['version'], CODE_PROFILER_VERSION, '<') ) {
 
 		// Version 1.1
-		if (! isset( $cp_options['enable_wpcli'] ) ) {
-			$cp_options['enable_wpcli'] = 1;
+		if ( version_compare( $cp_options['version'], '1.1', '<' ) ) {
+			if (! isset( $cp_options['enable_wpcli'] ) ) {
+				$cp_options['enable_wpcli'] = 1;
+			}
 		}
 
 		// Version 1.2
-		if (! isset( $cp_options['disable_wpcron'] ) ) {
-			$cp_options['disable_wpcron'] = 1;
+		if ( version_compare( $cp_options['version'], '1.2', '<' ) ) {
+			if (! isset( $cp_options['disable_wpcron'] ) ) {
+				$cp_options['disable_wpcron'] = 1;
+			}
 		}
 
 		// Version 1.3.1
-		if (! isset( $cp_options['http_response'] ) ) {
-			$cp_options['http_response'] = '^(?:3|4|5)\d{2}$';
+		if ( version_compare( $cp_options['version'], '1.3.1', '<' ) ) {
+			if (! isset( $cp_options['http_response'] ) ) {
+				$cp_options['http_response'] = '^(?:3|4|5)\d{2}$';
+			}
 		}
 
 		// Version 1.5
-		if (! isset( $cp_options['accuracy'] ) ) {
-			$cp_options['accuracy'] = 1;
+		if ( version_compare( $cp_options['version'], '1.5', '<' ) ) {
+			if (! isset( $cp_options['accuracy'] ) ) {
+				$cp_options['accuracy'] = 1;
+			}
 		}
 
 		// Version 1.7.5
-		if (! isset( $cp_options['php_error'] ) ) {
-			$cp_options['php_error'] = 1;
+		if ( version_compare( $cp_options['version'], '1.7.5', '<' ) ) {
+			if (! isset( $cp_options['php_error'] ) ) {
+				$cp_options['php_error'] = 1;
+			}
 		}
 
 		// Version 1.8
-		if ( isset( $cp_options['mem_where'] ) ) {
-			$cp_options['mem']['x_end'] = $cp_options['mem_where'];
-			unset( $cp_options['mem_where'] );
+		if ( version_compare( $cp_options['version'], '1.8', '<' ) ) {
+			if ( isset( $cp_options['mem_where'] ) ) {
+				$cp_options['mem']['x_end'] = $cp_options['mem_where'];
+				unset( $cp_options['mem_where'] );
+			}
+			if ( isset( $cp_options['mem_post'] ) ) {
+				$cp_options['mem']['post'] = $cp_options['mem_post'];
+				unset( $cp_options['mem_post'] );
+			}
+			if ( isset( $cp_options['mem_user'] ) ) {
+				$cp_options['mem']['x_auth'] = $cp_options['mem_user'];
+				unset( $cp_options['mem_user'] );
+			}
+			if ( isset( $cp_options['mem_username'] ) ) {
+				$cp_options['mem']['username'] = $cp_options['mem_username'];
+				unset( $cp_options['mem_username'] );
+			}
+			if ( isset( $cp_options['mem_method'] ) ) {
+				$cp_options['mem']['method'] = $cp_options['mem_method'];
+				unset( $cp_options['mem_method'] );
+			}
+			if ( isset( $cp_options['mem_theme'] ) ) {
+				$cp_options['mem']['theme'] = $cp_options['mem_theme'];
+				unset( $cp_options['mem_theme'] );
+			}
+			if ( isset( $cp_options['ua'] ) ) {
+				$cp_options['mem']['user_agent'] = $cp_options['ua'];
+				unset( $cp_options['ua'] );
+			}
+			if ( isset( $cp_options['cookies'] ) ) {
+				$cp_options['mem']['cookies'] = $cp_options['cookies'];
+				unset( $cp_options['cookies'] );
+			}
+			if ( isset( $cp_options['mem_content_type'] ) ) {
+				$cp_options['mem']['content_type'] = $cp_options['mem_content_type'];
+				unset( $cp_options['mem_content_type'] );
+			}
+			if ( isset( $cp_options['payload'] ) ) {
+				$cp_options['mem']['payload'] = $cp_options['payload'];
+				unset( $cp_options['payload'] );
+			}
+			if ( isset( $cp_options['custom_headers'] ) ) {
+				$cp_options['mem']['custom_headers'] = $cp_options['custom_headers'];
+				unset( $cp_options['custom_headers'] );
+			}
+			if ( isset( $cp_options['exclusions'] ) ) {
+				$cp_options['mem']['exclusions'] = $cp_options['exclusions'];
+				unset( $cp_options['exclusions'] );
+			}
 		}
-		if ( isset( $cp_options['mem_post'] ) ) {
-			$cp_options['mem']['post'] = $cp_options['mem_post'];
-			unset( $cp_options['mem_post'] );
+
+		// Version 1.8.1
+		if ( version_compare( $cp_options['version'], '1.8.1', '<' ) ) {
+			CodeProfiler_WPCron::install();
 		}
-		if ( isset( $cp_options['mem_user'] ) ) {
-			$cp_options['mem']['x_auth'] = $cp_options['mem_user'];
-			unset( $cp_options['mem_user'] );
-		}
-		if ( isset( $cp_options['mem_username'] ) ) {
-			$cp_options['mem']['username'] = $cp_options['mem_username'];
-			unset( $cp_options['mem_username'] );
-		}
-		if ( isset( $cp_options['mem_method'] ) ) {
-			$cp_options['mem']['method'] = $cp_options['mem_method'];
-			unset( $cp_options['mem_method'] );
-		}
-		if ( isset( $cp_options['mem_theme'] ) ) {
-			$cp_options['mem']['theme'] = $cp_options['mem_theme'];
-			unset( $cp_options['mem_theme'] );
-		}
-		if ( isset( $cp_options['ua'] ) ) {
-			$cp_options['mem']['user_agent'] = $cp_options['ua'];
-			unset( $cp_options['ua'] );
-		}
-		if ( isset( $cp_options['cookies'] ) ) {
-			$cp_options['mem']['cookies'] = $cp_options['cookies'];
-			unset( $cp_options['cookies'] );
-		}
-		if ( isset( $cp_options['mem_content_type'] ) ) {
-			$cp_options['mem']['content_type'] = $cp_options['mem_content_type'];
-			unset( $cp_options['mem_content_type'] );
-		}
-		if ( isset( $cp_options['payload'] ) ) {
-			$cp_options['mem']['payload'] = $cp_options['payload'];
-			unset( $cp_options['payload'] );
-		}
-		if ( isset( $cp_options['custom_headers'] ) ) {
-			$cp_options['mem']['custom_headers'] = $cp_options['custom_headers'];
-			unset( $cp_options['custom_headers'] );
-		}
-		if ( isset( $cp_options['exclusions'] ) ) {
-			$cp_options['mem']['exclusions'] = $cp_options['exclusions'];
-			unset( $cp_options['exclusions'] );
-		}
+
+		// Adjust current version
+		$cp_options['version'] = CODE_PROFILER_VERSION;
 
 		// Update version in the DB
 		update_option('code-profiler', $cp_options );
@@ -777,6 +799,62 @@ function code_profiler_get_themes() {
 		}
 	}
 	return $list;
+}
+
+// =====================================================================
+// Retrieve all available cron events.
+
+function code_profiler_get_crons() {
+
+	$list = [];
+
+	$wp_crons = _get_cron_array();
+
+	if ( empty( $wp_crons ) ) {
+		return $list;
+	}
+
+	foreach ( $wp_crons as $timestamp => $cronhooks ) {
+		foreach ( $cronhooks as $hook => $keys ) {
+			$list[] = $hook;
+		}
+	}
+	sort( $list );
+	return $list;
+}
+
+// =====================================================================
+// Create a file with the ABSPATH.
+
+function code_profiler_create_tmpfile() {
+
+	$tmp_folder = dirname( __DIR__ ) .'/tmp';
+	$tmp_file   = "$tmp_folder/profiler.inc.php";
+
+	if (! is_dir( $tmp_folder ) ) {
+		$res = @ mkdir( $tmp_folder );
+		if ( false === $res ) {
+			return sprintf(
+				__('Cannot create temporary folder: [%s]. Any attempt to profile a cron event will likely fail.', 'code-profiler'),
+				$tmp_folder
+			);
+		}
+	}
+
+	if (! is_file( "$tmp_folder/index.html" ) ) {
+		touch( "$tmp_folder/index.html" );
+	}
+
+	$res = @ file_put_contents(
+		$tmp_file,
+		"<?php\nconst ABSPATH = '". ABSPATH ."';\n"
+	);
+	if ( false === $res ) {
+		return sprintf(
+			__('Cannot create temporary file: [%s]. Any attempt to profile a cron event will likely fail.', 'code-profiler'),
+			$tmp_file
+		);
+	}
 }
 
 // =====================================================================

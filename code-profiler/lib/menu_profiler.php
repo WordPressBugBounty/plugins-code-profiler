@@ -40,11 +40,28 @@ if (! is_writable( CODE_PROFILER_UPLOAD_DIR ) ) {
 	);
 }
 
+/**
+ * Check and warn if the Xdebug extension is loaded.
+ */
+if ( extension_loaded('xdebug') ) {
+	printf( CODE_PROFILER_WARNING_NOTICE,
+		esc_html__('Warning: the PHP Xdebug extension is loaded. Consider disabling it as it can drastically impact the performance and results of Code Profiler.', 'code-profiler')
+	);
+}
+
 // Clear the log if it's too big
 code_profiler_clearlog();
 
 // Clean-up temp files left in the profiles folder
 code_profiler_cleantmpfiles();
+
+/**
+ * Create temporary folder and file used to profile cron events.
+ */
+$error = code_profiler_create_tmpfile();
+if ( $error ) {
+	printf( CODE_PROFILER_ERROR_NOTICE,	esc_html( $error ) );
+}
 
 $home = home_url('/'); // Frontend
 $site = site_url('/'); // Backend
@@ -136,13 +153,15 @@ if ( isset( $cp_options['mem']['exclusions'] ) ) {
 		<td>
 			<table class="form-table">
 				<tr>
-					<th scope="row"><?php esc_html_e('Page to profile', 'code-profiler') ?> <span class="code-profiler-tip" data-tip="<?php esc_attr_e('Select the page you want the profiler to analyze. It can be in the frontend of the site, in the admin backend or a custom URL.', 'code-profiler') ?>"></span></th>
+					<th scope="row"><?php esc_html_e('Page to profile', 'code-profiler') ?> <span class="code-profiler-tip" data-tip="<?php esc_attr_e('Select the page you want the profiler to analyze. It can be in the frontend of the site, in the admin backend, a custom URL or a cron event. Note that in case of a cron event, the "HTTP Method" option will be ignored by Code Profiler as it will always send a POST request with an empty payload.', 'code-profiler') ?>"></span></th>
 					<td>
-						<p><label><input type="radio" name="x_end" value="frontend" onclick="cpjs_front_or_backend(1);"<?php checked( $cp_options['mem']['x_end'], 'frontend') ?> /> <?php esc_html_e('Website frontend', 'code-profiler') ?></label>
+						<p><label><input type="radio" name="x_end" value="frontend" onclick="cpjs_front_or_backend(this.value);"<?php checked( $cp_options['mem']['x_end'], 'frontend') ?> /> <?php esc_html_e('Website frontend', 'code-profiler') ?></label>
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						<label><input type="radio" name="x_end" value="custom" onclick="cpjs_front_or_backend(3);"<?php checked( $cp_options['mem']['x_end'], 'custom') ?> /> <?php esc_html_e('Custom post/URL', 'code-profiler') ?></label>
+						<label><input type="radio" name="x_end" value="custom" onclick="cpjs_front_or_backend(this.value);"<?php checked( $cp_options['mem']['x_end'], 'custom') ?> /> <?php esc_html_e('Custom post/URL', 'code-profiler') ?></label>
 						&nbsp;&nbsp;&nbsp;&nbsp;
-						<label><input type="radio" name="x_end" value="backend" onclick="cpjs_front_or_backend(2);"<?php checked( $cp_options['mem']['x_end'], 'backend') ?> /> <?php esc_html_e('Admin backend', 'code-profiler') ?></label>
+						<label><input type="radio" name="x_end" value="backend" onclick="cpjs_front_or_backend(this.value);"<?php checked( $cp_options['mem']['x_end'], 'backend') ?> /> <?php esc_html_e('Admin backend', 'code-profiler') ?></label>
+						&nbsp;&nbsp;&nbsp;&nbsp;
+						<label><input type="radio" name="x_end" value="wpcron" onclick="cpjs_front_or_backend(this.value);"<?php checked( $cp_options['mem']['x_end'], 'wpcron') ?> /> <?php esc_html_e('WP-Cron', 'code-profiler') ?></label>
 						</p>
 						<br />
 						<?php
@@ -188,6 +207,21 @@ if ( isset( $cp_options['mem']['exclusions'] ) ) {
 						?>
 							<?php esc_html_e('Select a page:', 'code-profiler') ?>
 							<select name="backend" id="id-backend"><?php echo code_profiler_fetch_admin_pages( $site, $cp_options ) ?></select>
+						</p>
+						<?php
+						/**
+						 * Cron tasks.
+						 */
+						if ( $cp_options['mem']['x_end'] == 'wpcron') {
+							echo '<p id="p-wpcron">';
+						} else {
+							echo '<p id="p-wpcron" style="display:none">';
+						}
+						?>
+							<?php esc_html_e('Select a cron event:', 'code-profiler') ?>
+							<select name="wpcron" id="id-wpcron">
+								<?php echo code_profiler_fetch_crontasks( $cp_options['mem']['post'] ); ?>
+							</select>
 						</p>
 					</td>
 				</tr>
@@ -254,8 +288,11 @@ if ( isset( $cp_options['mem']['exclusions'] ) ) {
 	</tr>
 </table>
 <?php
+if ( (! empty( $cookies ) || ! empty( $custom_headers ) ||
+	$cp_options['mem']['method'] == 'post' || ! empty( $exclusions ) ) &&
+	// We don't display the advanced section if the last profile was a cron event.
+	$cp_options['mem']['x_end'] != 'wpcron' ) {
 
-if (! empty( $cookies ) || ! empty( $custom_headers ) || $cp_options['mem']['method'] == 'post' || ! empty( $exclusions ) ) {
 	echo '<div id="cp-advanced-settings">';
 	$disabled_button = ' disabled';
 } else {
@@ -452,6 +489,42 @@ function code_profiler_fetch_admin_pages( $home, $cp_options ) {
 
 	}
 	return $backend;
+}
+
+// =====================================================================
+// Fetch scheduled tasks.
+
+function code_profiler_fetch_crontasks( $mem ) {
+
+	$cron_list = '';
+
+	$wp_crons = code_profiler_get_crons();
+
+	if ( empty( $wp_crons ) ) {
+		$cron_list = sprintf(
+			'<option value="0">%s</option>',
+			esc_html__('No cron tasks found.', 'code-profiler')
+		);
+		return $cron_list;
+	}
+
+	foreach( $wp_crons as $cron ) {
+
+		if ( $mem == $cron ) {
+			$selected = ' selected';
+		} else {
+			$selected = '';
+		}
+
+		$cron_list .= sprintf(
+			"<option value='%s'%s>%s</option>",
+			esc_attr( $cron ),
+			$selected,
+			esc_html( $cron )
+		);
+	}
+
+	return $cron_list;
 }
 
 // =====================================================================

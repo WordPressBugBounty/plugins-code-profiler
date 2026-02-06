@@ -93,7 +93,7 @@ class CP_Troubleshooter {
 			if ( is_writable( $tmp ) ) {
 				$tmp .= ' (writable)';
 			} else {
-				$tmp .= ' (not writable!)';
+				$tmp .= ' (not writable!)' .' ⚠️';
 			}
 		}
 		$tmp = $this->shorten_path( $tmp );
@@ -148,7 +148,30 @@ class CP_Troubleshooter {
 			$this->shorten_path( WPMU_PLUGIN_DIR );
 		$this->buffer[ $key ]['WordPress']['WPMU_PLUGIN_DIR']['writable'] =
 			is_writable( WPMU_PLUGIN_DIR );
+
+		/**
+		 * SAVEQUERIES: make sure it is not set to false.
+		 */
+		if ( defined('SAVEQUERIES') ) {
+			if ( SAVEQUERIES === false ) {
+				$this->buffer[ $key ]['WordPress']['SAVEQUERIES'] = 'FALSE' .' ⚠️';
+			} else {
+				$this->buffer[ $key ]['WordPress']['SAVEQUERIES'] = SAVEQUERIES;
+			}
+		} else {
+			$this->buffer[ $key ]['WordPress']['SAVEQUERIES'] = 'N/A';
+		}
+
+		/**
+		 * xdebug.
+		 */
+		if ( extension_loaded('xdebug') ) {
+			$this->buffer[ $key ]['Xdebug'] = esc_html__('Extension is loaded', 'code-profiler') .' ⚠️';
+		} else {
+			$this->buffer[ $key ]['Xdebug'] = '0';
+		}
 	}
+
 
 	/**
 	 * Verify if some important PHP functions are available.

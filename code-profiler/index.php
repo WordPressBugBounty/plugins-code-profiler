@@ -5,14 +5,14 @@ Plugin URI: https://nintechnet.com/codeprofiler/
 Description: A profiler to measure the performance of your WordPress plugins and themes.
 Author: Jerome Bruandet ~ NinTechNet Ltd.
 Author URI: https://nintechnet.com/
-Version: 1.8
+Version: 1.9
 Network: true
 License: GPLv3 or later
 Text Domain: code-profiler
 Domain Path: /languages
 */
 
-define('CODE_PROFILER_VERSION', '1.8');
+define('CODE_PROFILER_VERSION', '1.9');
 /**
  +=====================================================================+
  |    ____          _        ____             __ _ _                   |
@@ -212,6 +212,9 @@ function code_profiler_enqueue( $hook ) {
 		'missing_ajax' =>
 			esc_attr__('Please enter a valid JSON-encoded payload, or change the content-type option. '.
 			'If you want to send an empty value, enter: {}', 'code-profiler'),
+		'missing_wpcron' =>
+			esc_attr__('There are no cron events available, please select another page to profile.',
+			'code-profiler'),
 		'multiline_raw' =>
 			esc_attr__('The raw POST payload should be on one single line only.', 'code-profiler'),
 		'missing_post' =>

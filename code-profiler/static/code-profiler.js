@@ -69,25 +69,38 @@ function cpjs_front_or_backend( item ) {
 	'use strict';
 	// Enable/disable frontend/backend select box
 	// depending on user's choice
-	if ( item == 1 ) {
+	if ( item == 'frontend') {
 		jQuery('#p-frontend').show();
 		jQuery('#p-backend').hide();
 		jQuery('#p-custom').hide();
+		jQuery('#p-wpcron').hide();
 		jQuery('#id-frontend').focus();
 		jQuery('#user-unauthenticated').prop('disabled', false);
-	} else if ( item == 2 ) {
+		jQuery('#user-authenticated').prop('disabled', false);
+	} else if ( item == 'backend') {
 		jQuery('#p-backend').show();
 		jQuery('#p-frontend').hide();
 		jQuery('#p-custom').hide();
+		jQuery('#p-wpcron').hide();
 		jQuery('#id-backend').focus();
 		jQuery('#user-unauthenticated').prop('disabled', true);
+		jQuery('#user-authenticated').prop('disabled', false);
 		jQuery('#user-authenticated').prop('checked', true);
 		jQuery('#user-name').prop('disabled', false);
-	} else {
+	} else if ( item == 'custom') {
 		jQuery('#p-custom').show();
 		jQuery('#p-frontend').hide();
 		jQuery('#p-backend').hide();
+		jQuery('#p-wpcron').hide();
 		jQuery('#id-custom').focus();
+		jQuery('#user-unauthenticated').prop('disabled', false);
+		jQuery('#user-authenticated').prop('disabled', false);
+	} else {
+		jQuery('#p-wpcron').show();
+		jQuery('#p-custom').hide();
+		jQuery('#p-frontend').hide();
+		jQuery('#p-backend').hide();
+		jQuery('#id-wpcron').focus();
 		jQuery('#user-unauthenticated').prop('disabled', false);
 	}
 }
@@ -221,6 +234,13 @@ function cpjs_start_profiler() {
 
 	} else if ( x_end == 'custom') {
 		post = jQuery('#id-custom').val().trim(); // Trim user input
+
+	} else if ( x_end == 'wpcron') {
+		post = jQuery('#id-wpcron').val();
+		if ( post == 0 ) {
+			alert( cpi18n.missing_wpcron );
+			return;
+		}
 
 	} else {
 		alert( cpi18n.missing_frontbackend );
@@ -579,9 +599,6 @@ function cpjs_plugins_chart( caxis, clabel, cdata, ctotal_time ) {
 			options: {
 				animation: {
 					duration: 1000,
-					onComplete: function() {
-						document.getElementById('download-png-img').href = myChart.toBase64Image();
-					}
 				},
 				indexAxis: _indexAxis,
 				plugins: chartPlugins
@@ -589,6 +606,9 @@ function cpjs_plugins_chart( caxis, clabel, cdata, ctotal_time ) {
 			plugins:[ plugin],
 			data: chartData
 		});
+		/** Since Chartjs v4.5.1 **/
+//		document.getElementById('download-png-img').href = myChart.toBase64Image();
+
 	};
 
 	var ctx = document.getElementById('myChart').getContext('2d');
@@ -664,7 +684,6 @@ function cpjs_plugins_chart( caxis, clabel, cdata, ctotal_time ) {
 				duration: 700,
 				onComplete: function() {
 					jQuery('#cp-footer-buttons').slideDown(200);
-					document.getElementById('download-png-img').href = myChart.toBase64Image();
 				}
 			},
 			indexAxis: _indexAxis,
@@ -672,6 +691,9 @@ function cpjs_plugins_chart( caxis, clabel, cdata, ctotal_time ) {
 		},
 		plugins:[plugin]
 	});
+	/** Since Chartjs v4.5.1 **/
+	document.getElementById('download-png-img').href = myChart.toBase64Image();
+
 }
 
 // =====================================================================
@@ -693,9 +715,6 @@ function cpjs_iostats_chart( caxis, clabel, cdata, ctotal_calls ) {
 			options: {
 				animation: {
 					duration: 1000,
-					onComplete: function() {
-						document.getElementById('download-png-img').href = myChart.toBase64Image();
-					}
 				},
 				indexAxis: _indexAxis,
 				plugins: chartPlugins
@@ -703,6 +722,8 @@ function cpjs_iostats_chart( caxis, clabel, cdata, ctotal_calls ) {
 			plugins:[ plugin],
 			data: chartData
 		});
+		/** Since Chartjs v4.5.1 **/
+//		document.getElementById('download-png-img').href = myChart.toBase64Image();
 	};
 
 	var ctx = document.getElementById('myChart').getContext('2d');
@@ -765,7 +786,6 @@ function cpjs_iostats_chart( caxis, clabel, cdata, ctotal_calls ) {
 				duration: 700,
 				onComplete: function() {
 					jQuery('#cp-footer-buttons').slideDown(200);
-					document.getElementById('download-png-img').href = myChart.toBase64Image();
 				}
 			},
 			indexAxis: _indexAxis,
@@ -773,6 +793,8 @@ function cpjs_iostats_chart( caxis, clabel, cdata, ctotal_calls ) {
 		},
 		plugins:[plugin]
 	});
+	/** Since Chartjs v4.5.1 **/
+	document.getElementById('download-png-img').href = myChart.toBase64Image();
 
 }
 // =====================================================================
@@ -794,9 +816,6 @@ function cpjs_diskio_chart( caxis, clabel, cdata ) {
 			options: {
 				animation: {
 					duration: 1000,
-					onComplete: function() {
-						document.getElementById('download-png-img').href = myChart.toBase64Image();
-					}
 				},
 				indexAxis: _indexAxis,
 				plugins: chartPlugins
@@ -804,6 +823,8 @@ function cpjs_diskio_chart( caxis, clabel, cdata ) {
 			plugins:[ plugin],
 			data: chartData
 		});
+		/** Since Chartjs v4.5.1 **/
+//		document.getElementById('download-png-img').href = myChart.toBase64Image();
 	};
 	var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -865,7 +886,6 @@ function cpjs_diskio_chart( caxis, clabel, cdata ) {
 				duration: 700,
 				onComplete: function() {
 					jQuery('#cp-footer-buttons').slideDown(200);
-					document.getElementById('download-png-img').href = myChart.toBase64Image();
 				}
 			},
 			indexAxis: _indexAxis,
@@ -873,6 +893,8 @@ function cpjs_diskio_chart( caxis, clabel, cdata ) {
 		},
 		plugins:[plugin]
 	});
+	/** Since Chartjs v4.5.1 **/
+	document.getElementById('download-png-img').href = myChart.toBase64Image();
 }
 
 // =====================================================================

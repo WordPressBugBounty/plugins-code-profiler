@@ -2,8 +2,8 @@
 Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
-Tested up to: 6.8
-Stable tag: 1.8
+Tested up to: 6.9
+Stable tag: 1.9
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -16,7 +16,7 @@ A profiler to measure the performance of your WordPress plugins and themes.
 
 Code Profiler helps you to measure the performance of your plugins and themes at the PHP level and to quickly find any potential problem in your WordPress installation.
 
-You can profile the frontend and backend of WordPress, a custom URL, or even send a POST payload, custom cookies and HTTP headers to profile a contact form, a checkout process or an AJAX action among many other possibilities.
+You can profile the frontend and backend of WordPress, as well a cron events, a custom URL, send a POST payload, custom cookies and HTTP headers to profile a contact form, a checkout process or an AJAX action among many other possibilities.
 
 It generates an extremely detailed and easy to read analysis in the form of charts and tables that shows not only which plugin or theme, but also which PHP script, class, method and function is slowing down your website. It displays many useful additional information such as database queries, file I/O operations and disk I/O usage as well.
 
@@ -92,6 +92,22 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.9 (05 February 2026) =
+
+* It is now possible to profile cron events: on the profiler main page, click "WP-Cron" and select the cron to profile.
+* Updated browser's signatures.
+* Updated Chartjs library.
+* Small fixes and adjustments.
+
+= 1.8.2 (23 December 2025) =
+
+* A warning message will be displayed if the Xdebug extension is loaded as it can impact the profiler's results.
+* [Pro version] : Code Profiler will warn if SAVEQUERIES has been disabled by the user.
+
+= 1.8.1 (09 Octobre 2025) =
+
+* When profiling with WP-CLI, the results can be returned in JSON-encoded or CSV format, using the new `--out=<json|csv>` parameter. The output can be redirected to a file, e.g., `wp code-profiler run --out=csv > /tmp/results.csv`.
 
 = 1.8 (1st October, 2025) =
 

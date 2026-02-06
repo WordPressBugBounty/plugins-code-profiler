@@ -83,7 +83,7 @@ function codeprofiler_start_profiler() {
 
 	// Frontend or backend
 	if ( empty( $_POST['x_end'] ) ||
-		! in_array( $_POST['x_end'], ['frontend', 'backend', 'custom'] ) ) {
+		! in_array( $_POST['x_end'], ['frontend', 'backend', 'custom', 'wpcron'] ) ) {
 
 		$msg = sprintf(
 			esc_html__('Missing or incorrect parameter (%s)', 'code-profiler'), 'x_end'
@@ -128,6 +128,27 @@ function codeprofiler_start_profiler() {
 		$profile = code_profiler_profile_name();
 	} else {
 		$profile = sanitize_file_name( $_POST['profile'] );
+	}
+
+	/**
+	 * WP cron events use POST with an empty payload.
+	 */
+	if ( $_POST['x_end'] == 'wpcron') {
+
+		$doing_wp_cron = sprintf( '%.22F', microtime( true ) );
+		set_transient('doing_cron', $doing_wp_cron );
+
+		code_profiler_log_debug(
+			esc_html__('Cron event detected: setting method to POST with an empty payload.', 'code-profiler')
+		);
+		$_POST['method']			= 'post';
+		$_POST['content_type']	= 1;
+		$_POST['payload']			= '';
+		$_POST['post']				= esc_url(
+			plugins_url('wp-cron.php?doing_wp_cron=' .
+			$doing_wp_cron,
+			dirname( __FILE__ ) )
+		) ."&wpcron={$_POST['post']}" ;
 	}
 
 	// URI to profile
