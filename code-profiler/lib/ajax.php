@@ -596,9 +596,13 @@ function codeprofiler_start_profiler() {
 		$contents .= __('Response headers:', 'code-profiler') ."\n\n".
 			$response_headers .
 			"==================================================\n".
-			__('Response body:', 'code-profiler') ."\n\n".
-			print_r( $res['body'], true ).
-			"\n==================================================\n";
+			__('Response body:', 'code-profiler') ."\n\n";
+			if ( empty( $res['body'] ) ) {
+				$contents .= '<'. __('empty', 'code-profiler') . '>';
+			} else {
+				$contents .= print_r( $res['body'], true );
+			}
+			$contents .= "\n==================================================\n";
 
 		file_put_contents( $last_log[0], $contents );
 	}

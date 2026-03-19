@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.9
+Stable tag: 1.9.1
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,10 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.9.1 (19 March 2026) =
+
+* Cron events can be profiled with WP-CLI using the `--wpcron` parameter.
 
 = 1.9 (05 February 2026) =
 

@@ -38,13 +38,20 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			$_SERVER['HTTPS'] = 'on';
 		}
 
-		$_POST['x_end'] = 'frontend';
-		// Detect if we're authenticated or not
-		if ( is_user_logged_in() === true ) {
-			$_POST['x_auth']		= 'authenticated';
+		if (! empty( $assoc_args['wpcron'] ) ) {
+			$_POST['x_end'] = 'wpcron';
+			$_POST['post']  = $assoc_args['wpcron'];
+
 		} else {
-			$_POST['x_auth']		= 'unauthenticated';
+			$_POST['x_end'] = 'frontend';
+			// Detect if we're authenticated or not
+			if ( is_user_logged_in() === true ) {
+				$_POST['x_auth']		= 'authenticated';
+			} else {
+				$_POST['x_auth']		= 'unauthenticated';
+			}
 		}
+
 		$_POST['profile']		= 'WP-CLI_' . time();
 		$_POST['user_agent']	= 'Firefox';
 
@@ -333,6 +340,8 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 			__('GLOBAL PARAMETERS', 'code-profiler') ."\n\n".
 			"  --dest=<URL to profile>  **". __('Pro version only', 'code-profiler') ."**\n".
 			"      ". __('Path to the WordPress page or post to profile. If missing, profile the frontend.', 'code-profiler') ."\n\n".
+			"  --wpcron=<cron event> (optional)\n".
+			"      ". __('WordPress cron event to profile.', 'code-profiler') ."\n\n".
 			"  --user=<id|login|email> (optional)\n".
 			"      ". __('Run the profiler as the corresponding WordPress user. If missing, run as an unauthenticated user.', 'code-profiler') ."\n\n".
 			"  --u=<username> (optional)\n".
