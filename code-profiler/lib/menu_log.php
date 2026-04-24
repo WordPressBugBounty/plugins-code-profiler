@@ -18,6 +18,8 @@ if (! defined('ABSPATH') ) {
 // =====================================================================
 // Display the profiler's log.
 
+require __DIR__.'/class-logs.php';
+
 // Delete the log?
 if (! empty( $_POST['cp-delete-log'] ) ) {
 	if ( empty( $_POST['cp_nonce'] ) || ! wp_verify_nonce( $_POST['cp_nonce'], 'cp_delete_log') ) {
@@ -146,15 +148,13 @@ echo code_profiler_display_tabs( 4 );
 	<tr>
 		<td width="100%">
 			<textarea dir="auto" name="cptxtlog" class="large-text code" style="height:<?php echo $th; ?>px;" wrap="off" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"><?php
-
 			/**
-			 * Search for an eventual "last_request.1727412303.5681.log" file.
+			 * Display the last HTTP response log.
 			 */
-			$file = code_profiler_glob( CODE_PROFILER_UPLOAD_DIR, '^last_request\.\d+?\.\d+?\.log$', true );
-			if ( empty( $file[0] ) ) {
+			$log = CodeProfiler_Logs::get_HTTP_log();
+			if ( $log === false ) {
 				echo "\n\n > " . esc_html__('The HTTP response log is empty.', 'code-profiler');
 			} else {
-				$log = file_get_contents( $file[0] );
 				echo esc_textarea( $log );
 			}
 			?></textarea>

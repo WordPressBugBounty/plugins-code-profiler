@@ -106,7 +106,13 @@ class CodeProfiler_WPCron {
 		$until = 'This offer is valid until '.
 					date('F d', strtotime( self::$options['coupon']['date'] ) );
 
-		echo '<p><a href="https://nintechnet.com/" alt="Go Pro! Limited time offer" '.
+		if (! empty( self::$options['coupon']['url'] ) ) {
+			$url = self::$options['coupon']['url'];
+		} else {
+			$url = 'https://nintechnet.com/';
+		}
+
+		echo '<p><a href="'. esc_url( $url ) .'" alt="Go Pro! Limited time offer" '.
 			'title="Go Pro! Limited time offer" target="_blank" rel="noreferrer noopener">'.
 			'<img style="max-width:250px" src="data:image/png;base64, '. esc_attr( $data ) .'" />'.
 			'<br />'. esc_html( $until ) .'</a></p>';

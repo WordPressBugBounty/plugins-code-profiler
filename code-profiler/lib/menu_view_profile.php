@@ -171,12 +171,6 @@ if ( $section == 1 || $section == 2 || $section == 3 ) {
 		?>
 	</div>
 
-	<?php
-	if (! empty( $composer_warning ) ) {
-		echo $composer_warning;
-	}
-	?>
-
 	<div class="alignleft actions bulkactions">
 		<input type="button" class="button button-primary" style="min-width:100px" value="<?php esc_attr_e('Help', 'code-profiler' )?>" onclick="jQuery('#cp-footer-help').slideToggle(500);"/>
 	</div>

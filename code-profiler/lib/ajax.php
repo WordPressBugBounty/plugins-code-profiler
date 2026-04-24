@@ -536,17 +536,8 @@ function codeprofiler_start_profiler() {
 	 * except sensitive data (cookies & PHP session ID).
 	 */
 	if ( isset( $res['headers'] ) && isset( $res['body'] ) ) {
-		/**
-		 * Search for an existing log or create it.
-		 */
-		$last_log = code_profiler_glob(
-			CODE_PROFILER_UPLOAD_DIR,
-			'^last_request\.\d+?\.\d+?\.log$',
-			true
-		);
-		if ( empty( $last_log[0] ) ) {
-			$last_log[0] = CODE_PROFILER_UPLOAD_DIR .'/last_request.'. microtime( true ) .'.log';
-		}
+
+		require __DIR__.'/class-logs.php';
 		/**
 		 * Parse headers.
 		 */
@@ -574,37 +565,18 @@ function codeprofiler_start_profiler() {
 		/**
 		 * Save to the log.
 		 */
-		$contents = "==================================================\n".
-			__('Requested page:', 'code-profiler') ."\n\n".
-			"$raw_url\n".
-			"==================================================\n";
-
-		if ( ! empty( $headers['body'] ) ) {
-
-			$contents .= __('Post payload:', 'code-profiler') ."\n\n";
-			if ( $mem['content_type'] == 2 ) {
-				/**
-				 * application/json: must be decoded.
-				 */
-				$contents .= print_r( json_decode( $headers['body'] ), true );
-			} else {
-				$contents .= print_r( $headers['body'], true );
-			}
-			$contents .= "\n==================================================\n";
+		if ( empty( $headers['body'] ) ) {
+			$headers['body'] = 'x';
 		}
-
-		$contents .= __('Response headers:', 'code-profiler') ."\n\n".
-			$response_headers .
-			"==================================================\n".
-			__('Response body:', 'code-profiler') ."\n\n";
-			if ( empty( $res['body'] ) ) {
-				$contents .= '<'. __('empty', 'code-profiler') . '>';
-			} else {
-				$contents .= print_r( $res['body'], true );
-			}
-			$contents .= "\n==================================================\n";
-
-		file_put_contents( $last_log[0], $contents );
+		if ( empty( $res['body'] ) ) {
+			$res['body'] = '<'. __('empty', 'code-profiler') . '>';
+		}
+		CodeProfiler_Logs::save_HTTP_log(
+			$raw_url,
+			$headers['body'],
+			$response_headers,
+			$res['body']
+		);
 	}
 
 	// HTTP status code

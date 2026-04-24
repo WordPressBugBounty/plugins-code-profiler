@@ -83,25 +83,6 @@ echo code_profiler_display_tabs( 5 );
 		</td>
 	</tr>
 	<tr>
-		<td style="border-bottom:1px solid #c3c4c7"><a name="composerwarning"></a>
-			<h4><?php esc_html_e('Why does Code Profiler warn me that I have multiple plugins using Composer?', 'code-profiler') ?></h4>
-			<?php
-			echo esc_html_e('Composer, a tool for dependency management in PHP, is included in many popular plugins and themes. It is used to autoload PHP classes.', 'code-profiler') .
-			'<br />' .
-			esc_html__('Code Profiler will inform you if two or more activated plugins use it because you will need to take it into consideration when reading and interpreting the results. Let\'s take an example:', 'code-profiler').
-			'<br />' .
-			esc_html__('Assuming you have four plugins, #1, #2, #3 and #4. Both plugins #1 and #4 include and require Composer. WordPress will start and load plugin #1, which will run an instance of Composer to load its classes. Immediately after, WordPress will load plugins #2 and #3. Then, it will load plugin #4, which too will need to load its classes. However, plugin #4 will not start a new instance of Composer but, instead, will rely on the one from plugin #1 to load its own classes.', 'code-profiler').
-			'<br />' .
-			esc_html__('As a result, the execution time of plugin #1 will increase (its instance of Composer is used to load classes for plugin #4 too), while the execution time of plugin #4 will decrease (it doesn\'t need to start a new instance of Composer).', 'code-profiler').
-			' '.
-			esc_html__('Therefore, if you have a dozen or more plugins using Composer, it is important to take into consideration that the execution time of plugin #1 may be much higher than other plugins.', 'code-profiler').
-			'<br />' .
-			esc_html__('Also, assuming you are a developer and just want to profile a plugin that you wrote and that includes Composer, you will need to disable any other plugin using Composer in order to get the most accurate results for your plugin only.', 'code-profiler');
-			?>
-			<br />&nbsp;
-		</td>
-	</tr>
-	<tr>
 		<td style="border-bottom:1px solid #c3c4c7">
 			<h4><?php esc_html_e('Is Code Profiler multisite compatible?', 'code-profiler') ?></h4>
 			<?php esc_html_e('Code Profiler is multisite compatible. Note however that for security reasons, only the superadmin can run it.', 'code-profiler') ?>

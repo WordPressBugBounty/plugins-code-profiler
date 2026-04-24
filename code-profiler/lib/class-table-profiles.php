@@ -27,6 +27,10 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 		'summary',
 		'composer'
 	];
+	private $optional_files = [
+		'summary',
+		'composer'
+	];
 	private $abspath;
 	private $row_count  = 0;
 
@@ -293,8 +297,12 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 					$error = 0; $fsize = 0;
 					// Make sure we have all profile files
 					foreach( $this->default_files as $pname ) {
-						// Ignore these ones, there aren't mandatory
-						if ( in_array( $pname, [ 'composer', 'summary' ] ) ) { continue; }
+						/**
+						 * Ignore these ones, there aren't mandatory.
+						 */
+						if ( in_array( $pname, $this->optional_files ) ) {
+							continue;
+						}
 						if ( is_file( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" ) ) {
 							$fsize += filesize( CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile" );
 						} else {
@@ -316,8 +324,12 @@ class CodeProfiler_Table_Profiles extends WP_List_Table {
 					$search = false;
 					if (! empty( $_REQUEST['s'] ) ) {
 						foreach( $this->default_files as $pname ) {
-							// Ignore these ones, there aren't mandatory
-							if ( in_array( $pname, [ 'composer', 'summary' ] ) ) { continue; }
+							/**
+							 * Ignore these ones, there aren't mandatory.
+							 */
+							if ( in_array( $pname, $this->optional_files ) ) {
+								continue;
+							}
 							$search = $this->search_profile_file(
 								CODE_PROFILER_UPLOAD_DIR ."/{$match[1]}.{$match[2]}.$pname.profile",
 								sanitize_text_field( $_REQUEST['s'] )

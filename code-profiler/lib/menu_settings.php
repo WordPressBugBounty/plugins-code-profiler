@@ -144,12 +144,6 @@ $cp_options = get_option('code-profiler');
 		</tr>
 
 		<?php
-		// Composer warning
-		if (! empty( $cp_options['warn_composer'] ) ) {
-			$cp_options['warn_composer'] = 1;
-		} else {
-			$cp_options['warn_composer'] = 0;
-		}
 		// WP-CLI integration
 		if (! empty( $cp_options['enable_wpcli'] ) ) {
 			$cp_options['enable_wpcli'] = 1;
@@ -189,12 +183,6 @@ $cp_options = get_option('code-profiler');
 		<tr>
 			<th scope="row"><?php esc_html_e('General Options', 'code-profiler') ?></th>
 			<td>
-				<p><label><input type="checkbox" name="cp_options[warn_composer]"<?php checked( $cp_options['warn_composer'], '1') ?> /><?php esc_html_e('Show a notice when several plugins are using Composer dependency manager.','code-profiler') ?></label></p>
-
-				<p class="description"><?php esc_html_e('Consult the FAQ tab for more details about this option.', 'code-profiler') ?></p>
-
-				<br />
-
 				<p><label><input type="checkbox" name="cp_options[enable_wpcli]"<?php checked( $cp_options['enable_wpcli'], '1') ?> /><?php esc_html_e('Enable WP-CLI integration.','code-profiler') ?></label></p>
 				<p class="description"><?php printf( esc_html__('Enter %s to display the available command line options.', 'code-profiler'), '<code>wp code-profiler help</code>') ?></p>
 
@@ -360,13 +348,6 @@ function code_profiler_save_settings() {
 		$cp_options['hide_empty_value'] = 1;
 	} else {
 		$cp_options['hide_empty_value'] = 0;
-	}
-
-	// Composer warning
-	if (! empty( $_POST['cp_options']['warn_composer'] ) ) {
-		$cp_options['warn_composer'] = 1;
-	} else {
-		$cp_options['warn_composer'] = 0;
 	}
 
 	// WP-CLI integration

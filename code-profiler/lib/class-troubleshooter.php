@@ -376,7 +376,6 @@ class CP_Troubleshooter {
 
 		$list = [
 			'hide_empty_value',
-			'warn_composer',
 			'enable_wpcli',
 			'disable_wpcron',
 			// 'disable_db-php',

@@ -21,7 +21,6 @@ class CodeProfiler_Report {
 	private $last_time		= 0;
 	private $themes			= [];
 	private $plugins			= [];
-	private $composer			= [];
 	private $summary_list	= [];
 	private $cx_buffer		= [];
 	private $parsed_data		= 0;
@@ -95,7 +94,6 @@ class CodeProfiler_Report {
 		$this->save_connections();
 		$this->save_data();
 		$this->save_diskio();
-		$this->save_composer();
 
 		code_profiler_log_info( sprintf(
 			__('Volume of code and data analyzed: %1$sMB (%2$s plugins and '.
@@ -391,14 +389,6 @@ class CodeProfiler_Report {
 								$this->plugins[ $slug['plugin'] ]['time'] = 0;
 							}
 						}
-
-						// Look for multiple copies of composer and warn the user
-						if ( preg_match("`^{$this->plugins_dir}[\\\/](?:[^\\\/]+)[\\\/].+?[\\\/]composer[\\\/]autoload_real\.php`", $caller ) ) {
-							// Save the slug first, we'll fetch the name later
-							if (! isset( $this->composer[ $slug['plugin'] ] ) ) {
-								$this->composer[ $slug['plugin'] ] = '';
-							}
-						}
 					}
 
 				// We don't have a slug: if there's an old record, update it
@@ -476,25 +466,6 @@ class CodeProfiler_Report {
 		);
 	}
 
-
-	 /**
-	  * Save list of plugins using composer
-	  */
-	private function save_composer() {
-
-		if (! empty( $this->composer ) ) {
-			// Try to get the plugin's name
-			foreach( $this->composer as $slug => $v ) {
-				if ( isset( $this->plugins[ $slug ]['name'] ) ) {
-					$this->composer[ $slug ] = $this->plugins[ $slug ]['name'];
-				}
-			}
-			file_put_contents(
-				CODE_PROFILER_UPLOAD_DIR ."/{$this->microtime}.{$this->profile_name}.composer.profile",
-				json_encode( $this->composer )
-			);
-		}
-	}
 
 	/**
 	 * External connections.

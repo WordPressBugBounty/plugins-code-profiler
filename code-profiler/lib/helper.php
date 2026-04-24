@@ -55,19 +55,19 @@ function code_profiler_i18n_constants() {
 	if (! defined('CODE_PROFILER_UA') ) { // UA signatures can be user-defined in the wp-config.php
 		define ('CODE_PROFILER_UA', [
 			esc_html__('Desktop', 'code-profiler') => [
-				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:146.0) Gecko/20100101 Firefox/146.0',
+				'Firefox'			=> 'Mozilla/5.0 (Linux x86_64; rv:149.0) Gecko/20100101 Firefox/149.0',
 				'Chrome'				=> 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML,'.
-											' like Gecko) Chrome/143.0.0.0 Safari/537.36',
+											' like Gecko) Chrome/147.0.0.0 Safari/537.36',
 				'Edge'				=> 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,'.
-											' like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.3650.96'
+											' like Gecko) Chrome/147.0.0.0 Safari/537.36 Edg/Chrome/147.0.7727.50'
 			],
 			esc_html__('Mobile', 'code-profiler') => [
-				'Android Phone'	=> 'Mozilla/5.0 (Android 16; Mobile; rv:68.0) Gecko/68.0 Firefox/146.0',
+				'Android Phone'	=> 'Mozilla/5.0 (Android 16; Mobile; rv:68.0) Gecko/68.0 Firefox/149.0',
 				'Android Tablet'	=> 'Mozilla/5.0 (Linux; Android 16.0; SAMSUNG-SM-T377A Build/NMF26X)'.
-										' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.7499.147 Mobile Safari/537.36',
-				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_3 like Mac OS X) AppleWebKit/605.1.15'.
+										' AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.7727.50 Mobile Safari/537.36',
+				'iPhone'				=> 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7_7 like Mac OS X) AppleWebKit/605.1.15'.
 											' (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1',
-				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 18_7_3 like Mac OS X) AppleWebKit/605.1.15'.
+				'iPad'				=> 'Mozilla/5.0 (iPad; CPU OS 18_7_7 like Mac OS X) AppleWebKit/605.1.15'.
 										' (KHTML, like Gecko) GSA/213.0.449417121 Mobile/15E148 Safari/605.1.15'
 			],
 			esc_html__('Bot', 'code-profiler')    => [
@@ -235,6 +235,13 @@ function code_profiler_init_update() {
 			CodeProfiler_WPCron::install();
 		}
 
+		/**
+		 * Version 1.9.2
+		 */
+		if ( version_compare( $cp_options['version'], '1.9.2', '<' ) ) {
+			unset( $cp_options['warn_composer'] );
+		}
+
 		// Adjust current version
 		$cp_options['version'] = CODE_PROFILER_VERSION;
 
@@ -373,7 +380,6 @@ function code_profiler_default_options() {
 		'chart_max_plugins'	=> 25,
 		'hide_empty_value'	=> 1,
 		'table_max_rows'		=> 30,
-		'warn_composer'		=> 1,
 		'enable_wpcli'			=> 1,
 		'disable_wpcron'		=> 1,
 		'http_response'		=> '^(?:3|4|5)\d{2}$',
