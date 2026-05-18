@@ -180,12 +180,12 @@ if ( $section == 1 || $section == 2 || $section == 3 ) {
 	<?php
 	if ( isset( $rotate_img ) ) {
 	?>
-		<button type="button" class="button button-secondary" id="htov" title="<?php esc_attr_e('Click to rotate graph', 'code-profiler' )?>"><span class="dashicons dashicons-image-rotate" style="display: inline-block;vertical-align: middle;"></span></button>&nbsp;
+		<button type="button" class="button button-secondary" id="htov" title="<?php esc_attr_e('Click to rotate graph', 'code-profiler' )?>"><span class="dashicons dashicons-image-rotate" style="vertical-align: sub;"></span></button>&nbsp;
 	<?php
 	}
 	if ( isset( $save_png ) ) {
 	?>
-		<a type="button" class="button button-secondary" id="download-png-img" download="<?php echo esc_attr( $profile_name) ?>_plugins.png" title="<?php esc_attr_e('Click to download as an image', 'code-profiler' )?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-download" style="display: inline-block;vertical-align: middle;"></span><?php esc_attr_e('Download as a PNG image', 'code-profiler' )?></a>&nbsp;
+		<a type="button" class="button button-secondary" id="download-png-img" download="<?php echo esc_attr( $profile_name) ?>_plugins.png" title="<?php esc_attr_e('Click to download as an image', 'code-profiler' )?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-download" style="vertical-align: sub;"></span><?php esc_attr_e('Download as a PNG image', 'code-profiler' )?></a>&nbsp;
 	<?php
 	}
 	?>

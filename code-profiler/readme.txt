@@ -2,8 +2,8 @@
 Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 1.9.2
+Tested up to: 7.0
+Stable tag: 1.9.3
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,10 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.9.3 (18 May 2026) =
+
+* Fixed small UI compatibility issues with WordPress 7.0.
 
 = 1.9.2 (24 April 2026) =
 
