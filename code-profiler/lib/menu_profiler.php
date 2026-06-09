@@ -86,6 +86,9 @@ if (! empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'rerun' &&
 			$cp_options['mem'] = $cp_data['rerun'];
 			$rerun = true;
 		}
+	}else {
+		// Display why we don't want to run.
+		wp_die( esc_html__('Missing profile ID.', 'code-profiler') );
 	}
 }
 // Profile's name

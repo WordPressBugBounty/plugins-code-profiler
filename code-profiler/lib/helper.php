@@ -259,11 +259,15 @@ add_action('admin_init', 'code_profiler_init_update');
 function code_profiler_check_uploadsdir() {
 
 	if (! file_exists( CODE_PROFILER_UPLOAD_DIR ) ) {
-		mkdir( CODE_PROFILER_UPLOAD_DIR, 0755 );
+		wp_mkdir_p( CODE_PROFILER_UPLOAD_DIR );
 	}
-	if (! is_writable( CODE_PROFILER_UPLOAD_DIR ) ) {
-		// PHP running as an Apache module?
-		chmod( CODE_PROFILER_UPLOAD_DIR, 0777 );
+	if (! is_writable( CODE_PROFILER_UPLOAD_DIR ) || ! is_dir( CODE_PROFILER_UPLOAD_DIR ) ) {
+		wp_die(
+			sprintf(
+				__('Error: The %s folder cannot be created or is read only', 'code-profiler'),
+				esc_html( CODE_PROFILER_UPLOAD_DIR ) .'/'
+			)
+		);
 	}
 	if (! file_exists( CODE_PROFILER_UPLOAD_DIR .'/index.html') ) {
 		touch( CODE_PROFILER_UPLOAD_DIR .'/index.html');
@@ -464,6 +468,16 @@ function code_profiler_verify_key() {
 	} else {
 		$file = CODE_PROFILER_UPLOAD_DIR .'/key_'. sha1( $_REQUEST['profiler_key'] ) .'.tmp';
 		if ( file_exists( $file ) ) {
+			/**
+			 * We limit the TTL to max $expire seconds to match code_profiler_cleantmpfiles().
+			 */
+			$now    = time();
+			$expire = 20; // seconds
+			if ( filemtime( $file ) + $expire < $now ) {
+				$response['message'] = sprintf( $response['message'], '003');
+				wp_send_json( $response );
+			}
+
 			// Delete it and accept the request
 			unlink( $file );
 			return;
@@ -471,7 +485,6 @@ function code_profiler_verify_key() {
 		$response['message'] = sprintf( $response['message'], '002');
 	}
 	wp_send_json( $response );
-
 }
 
 // =====================================================================
@@ -714,7 +727,26 @@ function code_profiler_cleantmpfiles() {
 	$glob = code_profiler_glob( CODE_PROFILER_UPLOAD_DIR, '\.tmp$', true );
 
 	if ( is_array( $glob ) ) {
+
+		$now = time();
 		foreach( $glob as $file ) {
+			/**
+			 * Temporary files deletion:
+			 * - +20 seconds for temp sessions (to match the TTL checked at runtime).
+			 * - +10 minutes for unmatched temp profiles.
+			 */
+			if ( strpos( $file, CODE_PROFILER_UPLOAD_DIR .'/key_') === 0 ) {
+				if ( filemtime( $file ) + 20 > $now ) {
+					continue;
+				}
+			} else {
+				if ( filemtime( $file ) + 60 * 10 > $now ) {
+					continue;
+				}
+			}
+			/**
+			 * Delete all temp files.
+			 */
 			unlink( $file );
 		}
 	}

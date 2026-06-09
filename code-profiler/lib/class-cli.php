@@ -89,7 +89,7 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 		}
 
 		// Run the profiler
-		$response = json_decode( codeprofiler_start_profiler(), true );
+		$response = json_decode( CodeProfiler_helpers::codeprofiler_start_profiler(), true );
 		if ( $response === false ) {
 			$message = __('Unknown error returned by AJAX', 'code-profiler');
 			WP_CLI::error( $message );
@@ -106,7 +106,7 @@ class CodeProfiler_CLI extends WP_CLI_Command {
 
 		// All good, run the parser
 		$_POST['microtime'] = $response['microtime'];
-		$response = json_decode( codeprofiler_prepare_report(), true );
+		$response = json_decode( CodeProfiler_helpers::codeprofiler_prepare_report(), true );
 		if ( $response === false ) {
 			$message = __('Unknown error returned by AJAX', 'code-profiler');
 			WP_CLI::error( $message );

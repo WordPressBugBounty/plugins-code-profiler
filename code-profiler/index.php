@@ -5,14 +5,14 @@ Plugin URI: https://nintechnet.com/codeprofiler/
 Description: A profiler to measure the performance of your WordPress plugins and themes.
 Author: Jerome Bruandet ~ NinTechNet Ltd.
 Author URI: https://nintechnet.com/
-Version: 1.9.3
+Version: 1.9.4
 Network: true
 License: GPLv3 or later
 Text Domain: code-profiler
 Domain Path: /languages
 */
 
-define('CODE_PROFILER_VERSION', '1.9.3');
+define('CODE_PROFILER_VERSION', '1.9.4');
 /**
  +=====================================================================+
  |    ____          _        ____             __ _ _                   |
@@ -35,7 +35,7 @@ require __DIR__ .'/lib/menu.php';
 // Helper (can be already loaded by the MU plugin)
 require_once __DIR__ .'/lib/helper.php';
 // AJAX calls
-require __DIR__ .'/lib/ajax.php';
+require __DIR__ .'/lib/class-ajax.php';
 // Scheduled tasks
 require_once __DIR__ .'/lib/class-wp-cron.php';
 // =====================================================================
@@ -91,7 +91,7 @@ function code_profiler_activate() {
 
 register_activation_hook( __FILE__, 'code_profiler_activate');
 
-// ===================================================================== 2023-06-17
+// =====================================================================
 // Deactivation.
 
 function code_profiler_deactivate() {
@@ -113,7 +113,7 @@ function code_profiler_deactivate() {
 
 register_deactivation_hook( __FILE__, 'code_profiler_deactivate');
 
-// ===================================================================== 2023-06-14
+// =====================================================================
 // Create Profiler's menu.
 
 function code_profiler_admin_menu() {
