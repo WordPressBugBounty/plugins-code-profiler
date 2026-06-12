@@ -114,14 +114,18 @@ $summary_stats = code_profiler_getsummarystats( $profile_path );
 ?>
 </div>
 <?php
+$suffix = '';
 if ( $section == 1 ) {
 	require 'menu_view_plugins.php';
+	$suffix = 'plugins';
 
 } elseif ( $section == 2 ) {
 	require 'menu_view_iostats.php';
+	$suffix = 'iostats';
 
 } elseif ( $section == 3 ) {
 	require 'menu_view_diskio.php';
+	$suffix = 'diskio';
 
 } elseif ( $section == 4 ) {
 	require 'menu_pro.php';
@@ -185,7 +189,7 @@ if ( $section == 1 || $section == 2 || $section == 3 ) {
 	}
 	if ( isset( $save_png ) ) {
 	?>
-		<a type="button" class="button button-secondary" id="download-png-img" download="<?php echo esc_attr( $profile_name) ?>_plugins.png" title="<?php esc_attr_e('Click to download as an image', 'code-profiler' )?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-download" style="vertical-align: sub;"></span><?php esc_attr_e('Download as a PNG image', 'code-profiler' )?></a>&nbsp;
+		<a type="button" class="button button-secondary" id="download-png-img" download="<?php echo esc_attr("{$profile_name}_{$suffix}") ?>.png" title="<?php esc_attr_e('Click to download as an image', 'code-profiler' )?>" target="_blank" rel="noopener noreferrer"><span class="dashicons dashicons-download" style="vertical-align: sub;"></span><?php esc_attr_e('Download as a PNG image', 'code-profiler' )?></a>&nbsp;
 	<?php
 	}
 	?>

@@ -3,7 +3,7 @@ Contributors: bruandet, nintechnet
 Tags: profiler, debug, optimize, performance, benchmark
 Requires at least: 5.0
 Tested up to: 7.0
-Stable tag: 1.9.4
+Stable tag: 1.9.5
 License: GPLv3 or later
 Requires PHP: 7.1
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -92,6 +92,10 @@ Code Profiler does not collect any private data from you or your visitors. It do
 12. [Pro version]: Remote connections monitoring.
 
 == Changelog ==
+
+= 1.9.5 (12 June 2026) =
+
+* Fixed a bug where users couldn't download the grah as a PNG image with the latest version of FireFox (151.0.2+).
 
 = 1.9.4 (09 June 2026) =
 

@@ -606,9 +606,6 @@ function cpjs_plugins_chart( caxis, clabel, cdata, ctotal_time ) {
 			plugins:[ plugin],
 			data: chartData
 		});
-		/** Since Chartjs v4.5.1 **/
-//		document.getElementById('download-png-img').href = myChart.toBase64Image();
-
 	};
 
 	var ctx = document.getElementById('myChart').getContext('2d');
@@ -691,9 +688,13 @@ function cpjs_plugins_chart( caxis, clabel, cdata, ctotal_time ) {
 		},
 		plugins:[plugin]
 	});
-	/** Since Chartjs v4.5.1 **/
-	document.getElementById('download-png-img').href = myChart.toBase64Image();
 
+	document.getElementById('download-png-img').onclick = function() {
+		var a = document.createElement('a');
+		a.href = myChart.toBase64Image();
+		a.download = jQuery('#download-png-img').attr('download');
+		a.click();
+	}
 }
 
 // =====================================================================
@@ -722,8 +723,6 @@ function cpjs_iostats_chart( caxis, clabel, cdata, ctotal_calls ) {
 			plugins:[ plugin],
 			data: chartData
 		});
-		/** Since Chartjs v4.5.1 **/
-//		document.getElementById('download-png-img').href = myChart.toBase64Image();
 	};
 
 	var ctx = document.getElementById('myChart').getContext('2d');
@@ -793,8 +792,13 @@ function cpjs_iostats_chart( caxis, clabel, cdata, ctotal_calls ) {
 		},
 		plugins:[plugin]
 	});
-	/** Since Chartjs v4.5.1 **/
-	document.getElementById('download-png-img').href = myChart.toBase64Image();
+
+	document.getElementById('download-png-img').onclick = function() {
+		var a = document.createElement('a');
+		a.href = myChart.toBase64Image();
+		a.download = jQuery('#download-png-img').attr('download');
+		a.click();
+	}
 
 }
 // =====================================================================
@@ -823,8 +827,6 @@ function cpjs_diskio_chart( caxis, clabel, cdata ) {
 			plugins:[ plugin],
 			data: chartData
 		});
-		/** Since Chartjs v4.5.1 **/
-//		document.getElementById('download-png-img').href = myChart.toBase64Image();
 	};
 	var ctx = document.getElementById('myChart').getContext('2d');
 
@@ -893,8 +895,13 @@ function cpjs_diskio_chart( caxis, clabel, cdata ) {
 		},
 		plugins:[plugin]
 	});
-	/** Since Chartjs v4.5.1 **/
-	document.getElementById('download-png-img').href = myChart.toBase64Image();
+
+	document.getElementById('download-png-img').onclick = function() {
+		var a = document.createElement('a');
+		a.href = myChart.toBase64Image();
+		a.download = jQuery('#download-png-img').attr('download');
+		a.click();
+	}
 }
 
 // =====================================================================
